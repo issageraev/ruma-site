@@ -1,0 +1,351 @@
+/* ============ RUMA — источник кофе ============
+   Палитра из фирменного меню:
+   терракотовый  #935333
+   кремовый      #EEE1CF
+   бежевый (фон) #E1CEB8
+================================================ */
+
+:root {
+  --terra: #935333;
+  --terra-dark: #7d4629;
+  --cream: #EEE1CF;
+  --beige: #E1CEB8;
+  --radius: 18px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "Comfortaa", system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--terra);
+  line-height: 1.5;
+}
+
+a { color: inherit; }
+
+.container {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ---------- шапка ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--terra);
+  color: var(--cream);
+}
+
+.topbar__brand {
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+}
+
+.topbar__nav {
+  display: flex;
+  gap: 22px;
+}
+
+.topbar__nav a {
+  text-decoration: none;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.topbar__nav a:hover { opacity: 1; text-decoration: underline; }
+
+/* ---------- главный экран ---------- */
+.hero {
+  background: var(--terra);
+  color: var(--cream);
+  text-align: center;
+  padding: 64px 20px 84px;
+}
+
+.hero__logo {
+  width: min(340px, 72vw);
+  height: auto;
+}
+
+.hero__address {
+  margin-top: 28px;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+}
+
+.hero__actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 13px 28px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.btn--light {
+  background: var(--cream);
+  color: var(--terra);
+}
+
+.btn--light:hover { background: var(--beige); }
+
+.btn--ghost {
+  border: 2px solid var(--cream);
+  color: var(--cream);
+}
+
+.btn--ghost:hover { background: rgba(238, 225, 207, 0.12); }
+
+/* ---------- заголовки секций ---------- */
+.section-title {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.section-title--light { color: var(--cream); }
+
+/* ---------- меню ---------- */
+.menu {
+  padding: 72px 0 88px;
+  background:
+    url("../img/cup-beige.png") no-repeat right -120px center / 480px auto,
+    var(--cream);
+}
+
+.menu__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 44px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 12px 30px;
+  border-radius: 999px;
+  border: 2px solid var(--terra);
+  background: transparent;
+  color: var(--terra);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tab:hover { background: var(--beige); }
+
+.tab.is-active {
+  background: var(--terra);
+  color: var(--cream);
+}
+
+.menu__panel {
+  columns: 2;
+  column-gap: 56px;
+}
+
+.cat {
+  break-inside: avoid;
+  margin-bottom: 40px;
+}
+
+.cat__title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+
+.cat__note {
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.75;
+}
+
+.cat__list { list-style: none; }
+
+.item { margin-bottom: 10px; }
+
+.item__row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.item__name { font-weight: 500; }
+
+.item__note {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.item__dots {
+  flex: 1;
+  border-bottom: 2px dotted rgba(147, 83, 51, 0.45);
+  transform: translateY(-4px);
+  min-width: 18px;
+}
+
+.item__price {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.item__desc {
+  font-size: 0.78rem;
+  opacity: 0.75;
+  margin-top: 2px;
+  max-width: 40ch;
+}
+
+/* ---------- отзывы ---------- */
+.reviews {
+  background: var(--terra);
+  color: var(--cream);
+  padding: 72px 0 84px;
+}
+
+.reviews__ratings {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 42px;
+  flex-wrap: wrap;
+}
+
+.rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 22px;
+  border: 2px solid rgba(238, 225, 207, 0.5);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.rating-badge:hover {
+  border-color: var(--cream);
+  background: rgba(238, 225, 207, 0.08);
+}
+
+.rating-badge__score {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.rating-badge__score::after {
+  content: " ★";
+  font-size: 1.1rem;
+}
+
+.rating-badge__src { font-size: 0.85rem; opacity: 0.85; }
+
+.reviews__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.review {
+  background: var(--cream);
+  color: var(--terra);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.review blockquote { font-size: 0.95rem; }
+
+.review figcaption {
+  font-size: 0.78rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+/* ---------- контакты ---------- */
+.contacts { padding: 72px 0; }
+
+.contacts__inner {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 44px;
+  align-items: center;
+}
+
+.contacts__logo {
+  width: 190px;
+  margin-bottom: 22px;
+}
+
+.contacts__line {
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.contacts__line a { text-decoration: none; }
+
+.contacts__line a:hover { text-decoration: underline; }
+
+.contacts__map iframe {
+  width: 100%;
+  height: 340px;
+  border: 0;
+  border-radius: var(--radius);
+  display: block;
+}
+
+/* ---------- подвал ---------- */
+.footer {
+  background: var(--terra);
+  color: var(--cream);
+  text-align: center;
+  padding: 20px;
+  font-size: 0.82rem;
+}
+
+/* ---------- адаптив ---------- */
+@media (max-width: 800px) {
+  .menu__panel { columns: 1; }
+  .contacts__inner { grid-template-columns: 1fr; }
+  .menu { background-size: 340px auto; background-position: right -140px top 40px; }
+}
+
+@media (max-width: 520px) {
+  .topbar__nav { gap: 14px; }
+  .topbar__nav a { font-size: 0.8rem; }
+  .hero { padding: 48px 16px 64px; }
+}
