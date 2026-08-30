@@ -115,6 +115,60 @@
     <p>© <span id="year"></span> RUMA — источник кофе</p>
   </footer>
 
+  <!-- ПЛАШКА КОРЗИНЫ -->
+  <div class="cart-bar" id="cart-bar" hidden>
+    <span class="cart-bar__info" id="cart-bar-info"></span>
+    <button class="btn btn--light cart-bar__btn" id="cart-bar-open">Оформить заказ</button>
+  </div>
+
+  <!-- ВЫБОР ВАРИАНТА (объём/размер) -->
+  <div class="overlay" id="variant-picker" hidden>
+    <div class="overlay__backdrop" data-close></div>
+    <div class="dialog dialog--small">
+      <h4 class="dialog__title" id="variant-title"></h4>
+      <div class="variant-options" id="variant-options"></div>
+      <button class="dialog__close" data-close aria-label="Закрыть">✕</button>
+    </div>
+  </div>
+
+  <!-- ОФОРМЛЕНИЕ ЗАКАЗА -->
+  <div class="overlay" id="cart-sheet" hidden>
+    <div class="overlay__backdrop" data-close></div>
+    <div class="dialog">
+      <h4 class="dialog__title">Ваш заказ</h4>
+      <ul class="cart-items" id="cart-items"></ul>
+      <div class="cart-totalrow">
+        <button class="cart-clear" id="cart-clear">Очистить всё</button>
+        <span>Итого: <b id="cart-total"></b></span>
+      </div>
+
+      <p class="order-type-label">Как вам удобно?</p>
+      <div class="order-types">
+        <button class="order-type" data-type="С собой">С собой</button>
+        <button class="order-type" data-type="На месте">На месте</button>
+        <button class="order-type" data-type="Заберу заказ">Заберу заказ</button>
+        <button class="order-type" data-type="Отправить на такси">Отправить на такси</button>
+      </div>
+
+      <div class="order-extra" id="order-extra" hidden>
+        <label class="order-extra__label" id="order-extra-label" for="order-extra-input"></label>
+        <input class="order-extra__input" id="order-extra-input" type="text" maxlength="120">
+      </div>
+
+      <div class="order-extra">
+        <label class="order-extra__label" for="order-comment">Комментарий к заказу</label>
+        <input class="order-extra__input" id="order-comment" type="text" maxlength="200"
+               placeholder="необязательно — пожелания, аллергии, «без сахара»…">
+      </div>
+
+      <a class="order-submit" id="order-btn" href="#" target="_blank" rel="noopener">
+        Заказать в WhatsApp
+      </a>
+      <p class="order-hint">Откроется чат WhatsApp с готовым текстом заказа — останется нажать «Отправить»</p>
+      <button class="dialog__close" data-close aria-label="Закрыть">✕</button>
+    </div>
+  </div>
+
   <script src="js/menu.js"></script>
   <script src="js/main.js"></script>
 </body>

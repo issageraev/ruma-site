@@ -337,6 +337,321 @@ a { color: inherit; }
   font-size: 0.82rem;
 }
 
+/* ---------- корзина и заказ ---------- */
+[hidden] { display: none !important; }
+
+.item__add {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-left: 4px;
+  border: none;
+  border-radius: 50%;
+  background: var(--terra);
+  color: var(--cream);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+  align-self: center;
+}
+
+.item__add:hover { background: var(--terra-dark); }
+
+.item__add--flash { transform: scale(1.35); background: var(--terra-dark); }
+
+.cart-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 12px 10px 22px;
+  background: var(--terra);
+  color: var(--cream);
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(60, 30, 12, 0.35);
+  max-width: calc(100vw - 24px);
+}
+
+.cart-bar__info { font-weight: 700; white-space: nowrap; }
+
+.cart-bar__btn { padding: 10px 20px; font-size: 0.88rem; }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(60, 30, 12, 0.45);
+}
+
+.dialog {
+  position: relative;
+  width: min(520px, 100vw);
+  max-height: 86vh;
+  overflow-y: auto;
+  background: var(--cream);
+  color: var(--terra);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 26px 24px calc(26px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 560px) {
+  .overlay { align-items: center; }
+  .dialog { border-radius: var(--radius); }
+}
+
+.dialog--small { width: min(400px, 100vw); }
+
+.dialog__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  padding-right: 30px;
+}
+
+.dialog__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: var(--beige);
+  color: var(--terra);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.dialog__close:hover { background: var(--terra); color: var(--cream); }
+
+.variant-options { display: flex; flex-direction: column; gap: 10px; }
+
+.variant-btn {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 13px 18px;
+  border: 2px solid var(--terra);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--terra);
+  cursor: pointer;
+}
+
+.variant-btn:hover { background: var(--terra); color: var(--cream); }
+
+.cart-items { list-style: none; margin-bottom: 14px; }
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px dotted rgba(147, 83, 51, 0.35);
+}
+
+.cart-item__name { flex: 1; font-size: 0.92rem; font-weight: 500; }
+
+.cart-item__variant { font-size: 0.78rem; opacity: 0.7; white-space: nowrap; }
+
+.cart-item__qty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-btn {
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--terra);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--terra);
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qty-btn:hover { background: var(--terra); color: var(--cream); }
+
+.cart-item__sum {
+  min-width: 62px;
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cart-totalrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.05rem;
+  margin-bottom: 20px;
+}
+
+.cart-clear {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--terra);
+  opacity: 0.65;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+
+.cart-clear:hover {
+  opacity: 1;
+  background: rgba(147, 83, 51, 0.1);
+}
+
+.order-type-label { font-weight: 700; margin-bottom: 10px; }
+
+.order-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.order-type {
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 9px 16px;
+  border: 2px solid var(--terra);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--terra);
+  cursor: pointer;
+}
+
+.order-type.is-active {
+  background: var(--terra);
+  color: var(--cream);
+  font-weight: 700;
+}
+
+.order-extra { margin-bottom: 16px; }
+
+.order-extra__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.order-extra__input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 2px solid rgba(147, 83, 51, 0.5);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--terra);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.order-extra__input:focus {
+  outline: none;
+  border-color: var(--terra);
+}
+
+/* кнопка заказа — овальная, с двойной обводкой:
+   тонкое кремовое кольцо, утопленное внутрь кнопки */
+.order-submit {
+  display: block;
+  text-align: center;
+  width: 100%;
+  padding: 17px 28px;
+  background: var(--terra);
+  color: var(--cream);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border: none;
+  border-radius: 999px;
+  box-shadow:
+    inset 0 0 0 4px var(--terra),
+    inset 0 0 0 6px var(--cream);
+  transition: background 0.2s ease;
+}
+
+.order-submit:hover {
+  background: var(--terra-dark);
+  box-shadow:
+    inset 0 0 0 4px var(--terra-dark),
+    inset 0 0 0 6px var(--cream);
+}
+
+.order-submit:active {
+  background: #6d3c22;
+  box-shadow:
+    inset 0 0 0 4px #6d3c22,
+    inset 0 0 0 6px var(--cream);
+}
+
+/* та же обводка у кнопки на плашке корзины (кремовая на терракотовой) */
+.cart-bar__btn {
+  box-shadow:
+    inset 0 0 0 4px var(--cream),
+    inset 0 0 0 6px var(--terra);
+  transition: background 0.2s ease;
+}
+
+/* счётчик выбранного на кнопке «+» в меню */
+.item__add { position: relative; }
+
+.item__add[data-count]::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--terra);
+  border: 2px solid var(--terra);
+  font-size: 0.62rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.order-hint {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  text-align: center;
+}
+
 /* ---------- адаптив ---------- */
 @media (max-width: 800px) {
   .menu__panel { columns: 1; }
