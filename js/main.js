@@ -307,9 +307,46 @@
     });
   });
 
+  /* ---------- часы работы: «открыто сейчас» / «закрыто» ---------- */
+  // ежедневно, один и тот же режим — если часы поменяются, достаточно
+  // поправить эти две строки
+  var HOURS = { open: "07:30", close: "23:00" };
+
+  function minutesOf(hhmm) {
+    var parts = hhmm.split(":");
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  }
+
+  function updateHoursBadge() {
+    var badge = document.getElementById("hours-badge");
+    var contactsStatus = document.getElementById("contacts-hours-status");
+    if (!badge && !contactsStatus) return;
+
+    var now = new Date();
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+    var openMin = minutesOf(HOURS.open);
+    var closeMin = minutesOf(HOURS.close);
+    var isOpen = nowMin >= openMin && nowMin < closeMin;
+
+    var text = isOpen ? "Открыто · до " + HOURS.close : "Закрыто · откроется в " + HOURS.open;
+
+    if (badge) {
+      badge.textContent = text;
+      badge.classList.toggle("hours-badge--open", isOpen);
+      badge.classList.toggle("hours-badge--closed", !isOpen);
+    }
+    if (contactsStatus) {
+      contactsStatus.textContent = text;
+      contactsStatus.classList.toggle("hours-badge--open", isOpen);
+      contactsStatus.classList.toggle("hours-badge--closed", !isOpen);
+    }
+  }
+
   /* ---------- старт ---------- */
   loadCart();
   render("drinks");
   updateCartUI();
+  updateHoursBadge();
+  setInterval(updateHoursBadge, 60000); // на случай, если страница открыта на границе открытия/закрытия
   document.getElementById("year").textContent = new Date().getFullYear();
 })();
