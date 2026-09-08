@@ -340,10 +340,18 @@ a { color: inherit; }
 /* ---------- корзина и заказ ---------- */
 [hidden] { display: none !important; }
 
+/* убирает системный жест «двойной тап — зум» на всех кнопках и ссылках:
+   без этого промах по маленькой кнопке на телефоне читается браузером
+   как попытка приблизить страницу */
+a, button {
+  touch-action: manipulation;
+}
+
 .item__add {
+  position: relative;
   flex-shrink: 0;
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   margin-left: 4px;
   border: none;
   border-radius: 50%;
@@ -356,6 +364,19 @@ a { color: inherit; }
   cursor: pointer;
   transition: transform 0.15s, background 0.15s;
   align-self: center;
+}
+
+/* невидимая зона нажатия шире кнопки — вытянута по горизонтали, где обычно
+   промахивается палец, но по вертикали ограничена высотой строки (40px
+   между соседними кнопками), чтобы не задевать позицию сверху или снизу */
+.item__add::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 46px;
+  height: 34px;
+  transform: translate(-50%, -50%);
 }
 
 .item__add:hover { background: var(--terra-dark); }
@@ -622,8 +643,6 @@ a { color: inherit; }
 }
 
 /* счётчик выбранного на кнопке «+» в меню */
-.item__add { position: relative; }
-
 .item__add[data-count]::after {
   content: attr(data-count);
   position: absolute;
