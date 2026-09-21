@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <script>document.documentElement.classList.add('js');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Исса Гераев — маркетинг, дизайн, ИИ, IT | GERAEV TECHNOLOGY</title>
+  <meta name="description" content="Исса Гераев — мультидисциплинарный специалист: маркетинг, дизайн, ИИ и IT. Портфолио и кейсы, включая цифровой продукт для кофейни РУМА.">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+
+  <!-- иконки -->
+  <svg style="display:none" aria-hidden="true">
+    <symbol id="icon-whatsapp" viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.35 5.07L2 22l5.11-1.34A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.2 14.2c-.22.62-1.29 1.19-1.78 1.24-.46.05-.93.24-3.12-.65-2.64-1.09-4.34-3.77-4.47-3.95-.13-.18-1.07-1.42-1.07-2.71 0-1.29.68-1.92.92-2.18.24-.26.52-.32.7-.32.18 0 .35 0 .5.01.16.01.38-.06.6.46.22.53.75 1.83.82 1.96.07.13.11.29.02.47-.09.18-.14.29-.27.45-.13.15-.28.34-.4.46-.13.13-.27.27-.12.53.16.26.7 1.15 1.5 1.86 1.03.92 1.9 1.21 2.16 1.35.26.13.41.11.56-.07.15-.18.65-.76.82-1.02.18-.26.35-.22.59-.13.24.09 1.52.72 1.78.85.26.13.44.2.5.31.06.11.06.62-.16 1.24z"/>
+    </symbol>
+    <symbol id="icon-telegram" viewBox="0 0 24 24">
+      <path d="M21.5 3.5 2.7 10.9c-.9.35-.9.86-.16 1.08l4.8 1.5 1.85 5.6c.22.6.38.84.77.84.33 0 .48-.15.66-.33l1.86-1.78 4.03 2.97c.74.41 1.27.2 1.46-.68l2.64-12.45c.27-1.08-.4-1.57-1.11-1.25zM8.6 13.97l9.03-5.7c.43-.26.83-.12.5.17l-7.62 6.88-.3 3.2-1.37-4.4z"/>
+    </symbol>
+  </svg>
+
+  <!-- шапка: вордмарк + переключатель языка -->
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="#top" class="wordmark">
+        <span class="wordmark__main">GERAEV</span>
+        <span class="wordmark__sub">TECHNOLOGY</span>
+      </a>
+      <div class="lang-switch" role="group" aria-label="Язык / Language">
+        <button class="lang-btn is-active" data-lang="ru" aria-pressed="true">RU</button>
+        <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section class="hero" id="top">
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <p class="eyebrow" data-i18n="hero.eyebrow">Маркетинг · Дизайн · ИИ · IT</p>
+        <h1 class="hero__name" data-i18n="hero.name">Исса Гераев</h1>
+        <p class="hero__headline" data-i18n="hero.headline">Маркетинг, дизайн и IT — в одних руках, от идеи до результата.</p>
+        <p class="hero__subhead" data-i18n="hero.subhead">Мультидисциплинарный специалист — среди прочего построил цифровой продукт для реального бизнеса: от бренда до сайта и NFC-визиток.</p>
+        <div class="contact-row">
+          <a class="icon-btn" data-contact="whatsapp" data-i18n-aria="aria.whatsapp" aria-label="Написать в WhatsApp"
+             href="https://wa.me/79958589505?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%B8%D1%88%D1%83%20%D0%BF%D0%BE%20%D0%B2%D0%B0%D1%88%D0%B5%D0%BC%D1%83%20%D0%BF%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE.%20"
+             target="_blank" rel="noopener">
+            <svg class="icon"><use href="#icon-whatsapp"></use></svg>
+          </a>
+          <a class="icon-btn" data-contact="telegram" data-i18n-aria="aria.telegram" aria-label="Написать в Telegram"
+             href="https://t.me/pridestatus" target="_blank" rel="noopener">
+            <svg class="icon"><use href="#icon-telegram"></use></svg>
+          </a>
+          <a class="email-link" data-contact="email" href="mailto:geraevinc@gmail.com">geraevinc@gmail.com</a>
+        </div>
+      </div>
+      <div class="hero__photo">
+        <img src="img/hero/issa-hero.jpg" alt="Исса Гераев — портретное фото">
+      </div>
+    </div>
+  </section>
+
+  <!-- обо мне -->
+  <section class="about" id="about">
+    <div class="container about__inner">
+      <div class="about__photo reveal">
+        <img src="img/about/issa-about.jpg" alt="Исса Гераев в полный рост, студийное фото">
+      </div>
+      <div class="about__content">
+        <h2 class="section-title reveal" data-i18n="about.title">Обо мне</h2>
+        <div class="about__body">
+          <p class="reveal" data-i18n="about.p1">Я — специалист на стыке маркетинга, дизайна и технологий. Мне интересна не столько «одна профессия», сколько то, как разные навыки складываются в результат: бренд, продукт, цифровой сервис, который реально работает.</p>
+          <p class="reveal" data-i18n="about.p2">Начинал в кофейной индустрии — четыре года практики, в том числе в крупном городе, где научился держать темп, видеть детали и отвечать за качество каждый день. Это дало то, что не дают курсы: дисциплину, скорость и понимание, как выглядит хороший сервис изнутри.</p>
+          <p class="reveal" data-i18n="about.p3">Параллельно около двух лет самостоятельно развивался в графическом дизайне, затем пришёл интерес к технологиям — сначала на базовом уровне программирования, потом через вайбкодинг и разработку в связке с ИИ, что позволило самому собирать цифровые продукты, а не только придумывать их на бумаге.</p>
+          <p class="reveal" data-i18n="about.p4">Есть опыт управления персоналом, маркетинга и продвижения, аналитики и ведения проектов — то есть я умею не только придумать и сделать, но и довести до конца, посчитать результат и организовать команду вокруг задачи. Отдельное увлечение — ручная работа с кожей, где важны точность и терпение.</p>
+          <p class="reveal" data-i18n="about.p5">Кофейный бизнес РУМА — не моя идентичность, а один из результатов: пример того, как маркетинг, дизайн и технологии, собранные в одних руках, превращаются в работающий продукт.</p>
+        </div>
+        <div class="stats-row reveal">
+          <div class="stat">
+            <span class="stat__num">4+</span>
+            <span class="stat__label" data-i18n="about.stat1_label">года практического опыта</span>
+          </div>
+          <div class="stat">
+            <span class="stat__num">15</span>
+            <span class="stat__label" data-i18n="about.stat2_label">кофеен в ребрендинге</span>
+          </div>
+          <div class="stat">
+            <span class="stat__num">4.9★</span>
+            <span class="stat__label" data-i18n="about.stat3_label">рейтинг РУМА</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- кейсы: сетка -->
+  <section class="cases" id="cases">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="cases.title">Кейсы</h2>
+      <div class="case-grid">
+        <a class="case-card reveal" href="#case-ruma">
+          <span class="case-card__index">01</span>
+          <h3 class="case-card__title" data-i18n="case.ruma.title">РУМА</h3>
+          <p class="case-card__category" data-i18n="case.ruma.category">Кофейный бизнес · Бренд и digital-продукт</p>
+        </a>
+        <a class="case-card reveal" href="#case-character-coffee">
+          <span class="case-card__index">02</span>
+          <h3 class="case-card__title" data-i18n="case.character.title">«Кофе с характером»</h3>
+          <p class="case-card__category" data-i18n="case.character.category">Ребрендинг сети кофеен</p>
+        </a>
+        <a class="case-card reveal" href="#case-nfc">
+          <span class="case-card__index">03</span>
+          <h3 class="case-card__title" data-i18n="case.nfc.title">NFC-визитки</h3>
+          <p class="case-card__category" data-i18n="case.nfc.category">Продукт · Автоматизация и личный бренд</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- кейс 1: РУМА -->
+  <section class="case-detail" id="case-ruma">
+    <div class="container case-detail__inner">
+      <div class="case-detail__text reveal">
+        <p class="case-detail__category" data-i18n="case.ruma.category">Кофейный бизнес · Бренд и digital-продукт</p>
+        <h3 class="case-detail__title" data-i18n="case.ruma.title">РУМА</h3>
+        <p class="case-detail__body" data-i18n="case.ruma.text">РУМА — кофейня, для которой я выстроил не только операционные процессы, но и цифровую часть бизнеса: сайт с меню и заказом через WhatsApp, NFC-визитки для быстрого перехода гостей в мессенджер и на отзывы. Рейтинг заведения вырос с 4.5 до 4.9.</p>
+        <div class="rating-stat">
+          <span class="rating-stat__from">4.5</span>
+          <span class="rating-stat__arrow" aria-hidden="true">→</span>
+          <span class="rating-stat__to">4.9</span>
+          <span class="rating-stat__label" data-i18n="case.ruma.ratingLabel">рост рейтинга РУМА</span>
+        </div>
+      </div>
+      <div class="case-detail__media reveal">
+        <div class="case-media">
+          <img src="img/cases/ruma/ruma-site.jpg" alt="Скриншот главной страницы сайта РУМА">
+        </div>
+        <!-- TODO: заменить на реальное фото/макет NFC-карточки РУМА -->
+        <div class="media-placeholder" style="--ar:16/9">
+          <span data-i18n="placeholder.nfcCard">Макет NFC-карточки — скоро</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- кейс 2: «Кофе с характером» -->
+  <section class="case-detail case-detail--reverse" id="case-character-coffee">
+    <div class="container case-detail__inner">
+      <div class="case-detail__text reveal">
+        <p class="case-detail__category" data-i18n="case.character.category">Ребрендинг сети кофеен</p>
+        <h3 class="case-detail__title" data-i18n="case.character.title">«Кофе с характером»</h3>
+        <p class="case-detail__body" data-i18n="case.character.text">Полный ребрендинг сети из 15 кофеен: новый визуальный язык — от логотипа и фирменного стиля до итоговых макетов для точек. Задача — сделать сеть узнаваемой и живой, а не безликой.</p>
+      </div>
+      <div class="case-detail__media reveal">
+        <!-- TODO: заменить на реальные финальные макеты ребрендинга «Кофе с характером» -->
+        <div class="case-detail__media--split">
+          <div class="media-placeholder" style="--ar:3/4">
+            <span data-i18n="placeholder.characterLayout">Макет ребрендинга — скоро</span>
+          </div>
+          <div class="media-placeholder" style="--ar:3/4">
+            <span data-i18n="placeholder.characterLayout">Макет ребрендинга — скоро</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- кейс 3: NFC-визитки -->
+  <section class="case-detail" id="case-nfc">
+    <div class="container case-detail__inner">
+      <div class="case-detail__text reveal">
+        <p class="case-detail__category" data-i18n="case.nfc.category">Продукт · Автоматизация и личный бренд</p>
+        <h3 class="case-detail__title" data-i18n="case.nfc.title">NFC-визитки</h3>
+        <p class="case-detail__body" data-i18n="case.nfc.text">Продукт на стыке автоматизации бизнеса и личного бренда: карточка, которая одним касанием открывает нужную ссылку — меню, WhatsApp, отзывы или личную визитку. Используется и в РУМА, и как личная визитка GERAEV TECHNOLOGY.</p>
+      </div>
+      <div class="case-detail__media reveal">
+        <!-- TODO: заменить на реальное фото продукта NFC-визитки -->
+        <div class="media-placeholder" style="--ar:4/3">
+          <span data-i18n="placeholder.nfcProduct">Фото NFC-карточки — скоро</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- контакты -->
+  <section class="contact" id="contact">
+    <div class="container contact__inner">
+      <h2 class="section-title reveal" data-i18n="contact.title">Написать и связаться</h2>
+      <p class="contact__lead reveal" data-i18n="contact.lead">Открыт для предложений по работе и проектов на фрилансе. Быстрее всего отвечаю в WhatsApp и Telegram.</p>
+      <div class="contact-row reveal">
+        <a class="icon-btn icon-btn--lg" data-contact="whatsapp" data-i18n-aria="aria.whatsapp" aria-label="Написать в WhatsApp"
+           href="https://wa.me/79958589505?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%B8%D1%88%D1%83%20%D0%BF%D0%BE%20%D0%B2%D0%B0%D1%88%D0%B5%D0%BC%D1%83%20%D0%BF%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE.%20"
+           target="_blank" rel="noopener">
+          <svg class="icon"><use href="#icon-whatsapp"></use></svg>
+        </a>
+        <a class="icon-btn icon-btn--lg" data-contact="telegram" data-i18n-aria="aria.telegram" aria-label="Написать в Telegram"
+           href="https://t.me/pridestatus" target="_blank" rel="noopener">
+          <svg class="icon"><use href="#icon-telegram"></use></svg>
+        </a>
+      </div>
+      <a class="email-link email-link--lg reveal" data-contact="email" href="mailto:geraevinc@gmail.com">geraevinc@gmail.com</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="wordmark wordmark--sm">
+        <span class="wordmark__main">GERAEV</span>
+        <span class="wordmark__sub">TECHNOLOGY</span>
+      </span>
+      <p>© <span id="year"></span> <span data-i18n="footer.name">Исса Гераев</span></p>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js?v=1"></script>
+  <script src="js/main.js?v=1"></script>
+</body>
+</html>
