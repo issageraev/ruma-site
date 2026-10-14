@@ -11,7 +11,7 @@
 
   function featuredRank(item) { return typeof item.featured === "number" ? item.featured : 999; }
 
-  // в подборку попадают позиции с featured: true (см. js/menu.js)
+  // в подборку попадают позиции с полем featured (см. js/menu.js), по его порядку
   function render(group, direction) {
     currentGroup = group;
     var rows = [];
@@ -35,7 +35,7 @@
     RumaCart.refresh();
   }
 
-  var order = ["drinks", "breakfast", "kitchen"];
+  var order = ["drinks", "food"];
   var tabs = RumaUI.setupTabs(tabsRoot, function (key) {
     var dir = order.indexOf(key) - order.indexOf(currentGroup);
     render(key, dir);
@@ -58,6 +58,16 @@
   }, { passive: true });
 
   render("drinks");
+
+  // время завтраков в контактах берём из пометки категории «Завтраки» в js/menu.js
+  var breakfast = MENU.food.filter(function (c) { return c.title === "Завтраки"; })[0];
+  var breakfastHours = document.getElementById("breakfast-hours");
+  if (breakfast && breakfast.note && breakfastHours) breakfastHours.textContent = breakfast.note;
+
+  // кнопки вида <a href="#menu" data-menu-tab="food"> открывают нужный раздел меню
+  document.querySelectorAll("[data-menu-tab]").forEach(function (a) {
+    a.addEventListener("click", function () { tabs.select(a.dataset.menuTab); });
+  });
 
   /* ---------- карусель отзывов ---------- */
   var track = document.getElementById("quotes");

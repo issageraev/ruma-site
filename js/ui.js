@@ -58,6 +58,14 @@ window.RumaUI = (function () {
 
   function pad(n) { return n < 10 ? "0" + n : String(n); }
 
+  // 1 позиция, 2 позиции, 5 позиций
+  function plural(n, one, few, many) {
+    var m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
+  }
+
   /* ---------- вкладки (с управлением стрелками, как в ARIA-паттерне) ---------- */
   function setupTabs(root, onChange) {
     var tabs = Array.prototype.slice.call(root.querySelectorAll(".tab"));
@@ -70,10 +78,7 @@ window.RumaUI = (function () {
         t.classList.toggle("is-active", on);
         t.setAttribute("aria-selected", on ? "true" : "false");
         t.tabIndex = on ? 0 : -1;
-        if (on) {
-          if (focus) t.focus();
-          if (t.scrollIntoView) t.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
-        }
+        if (on && focus) t.focus({ preventScroll: true });
       });
       onChange(key);
     }
@@ -112,6 +117,16 @@ window.RumaUI = (function () {
       a.addEventListener("click", function () { setOpen(false); });
     });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") setOpen(false); });
+
+    // логотип и ссылки «наверх» на этой же странице — плавно к самому верху, без #top в адресе
+    document.querySelectorAll('a[href="#top"]').forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        setOpen(false);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
+      });
+    });
     // тень у шапки, когда страница прокручена
     function onScroll() { header.classList.toggle("is-stuck", window.scrollY > 8); }
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -139,11 +154,15 @@ window.RumaUI = (function () {
     }
   }
 
+  function isOpenNow() {
+    var now = nowMinutes();
+    return now >= minutesOf(HOURS.open) && now < minutesOf(HOURS.close);
+  }
+
   function updateHours() {
     var nodes = document.querySelectorAll(".hours-badge");
     if (!nodes.length) return;
-    var now = nowMinutes();
-    var isOpen = now >= minutesOf(HOURS.open) && now < minutesOf(HOURS.close);
+    var isOpen = isOpenNow();
     var text = isOpen ? "Открыто · до " + HOURS.close : "Закрыто · откроется в " + HOURS.open;
     nodes.forEach(function (n) {
       n.textContent = text;
@@ -176,5 +195,8 @@ window.RumaUI = (function () {
     if (y) y.textContent = new Date().getFullYear();
   }
 
-  return { esc: esc, pad: pad, getVariants: getVariants, itemRow: itemRow, setupTabs: setupTabs, init: init };
+  return {
+    esc: esc, pad: pad, plural: plural, getVariants: getVariants, itemRow: itemRow,
+    setupTabs: setupTabs, isOpenNow: isOpenNow, hours: HOURS, init: init,
+  };
 })();

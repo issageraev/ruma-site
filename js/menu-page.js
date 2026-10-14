@@ -8,7 +8,7 @@
   var chips = document.getElementById("chips");
   var tabsRoot = document.getElementById("menu-tabs");
   var currentGroup = "drinks";
-  var order = ["drinks", "breakfast", "kitchen"];
+  var order = ["drinks", "food"];
 
   function render(group) {
     currentGroup = group;
@@ -85,7 +85,7 @@
     if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 2) tabs.step(dx < 0 ? 1 : -1);
   }, { passive: true });
 
-  // ссылка вида menu.html#kitchen открывает нужную вкладку сразу
+  // ссылка вида menu.html#food открывает нужную вкладку сразу
   var wanted = location.hash.slice(1);
   if (order.indexOf(wanted) !== -1) tabs.select(wanted);
   else render("drinks");

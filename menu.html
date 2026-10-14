@@ -17,15 +17,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=202610141524">
+  <link rel="stylesheet" href="css/style.css?v=202610142246">
 </head>
-<body class="page-menu">
+<body class="page-menu" id="top">
   <a class="skip-link" href="#main">Перейти к содержимому</a>
 
-  <header class="topbar" id="top">
+  <header class="topbar">
     <div class="topbar__inner">
       <a href="index.html" class="topbar__logo" aria-label="RUMA — на главную">
-        <img src="img/logo-mark-terra.png" alt="RUMA" width="64" height="48">
+        <img src="img/logo-wordmark.png" alt="RUMA" width="480" height="121">
       </a>
       <nav class="topbar__nav" id="site-nav" aria-label="Основная навигация">
         <a href="index.html#menu">Меню</a>
@@ -37,7 +37,7 @@
         <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="topbar__count" id="header-count" hidden></span>
       </a>
-      <button class="topbar__burger" id="burger" type="button" aria-label="Открыть меню навигации" aria-expanded="false" aria-controls="site-nav">
+      <button class="topbar__burger" id="burger" type="button" aria-label="Открыть навигацию" aria-expanded="false" aria-controls="site-nav">
         <span></span><span></span>
       </button>
     </div>
@@ -50,17 +50,17 @@
           <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           На главную
         </a>
+        <p class="eyebrow">Меню RUMA</p>
         <h1 class="display">Полное меню</h1>
-        <p class="menu__sub">Нажмите «+», чтобы собрать заказ — он уйдёт к нам в WhatsApp готовым сообщением.</p>
+        <p class="menu-hero__sub">Нажмите «+», чтобы собрать заказ — он уйдёт к нам в WhatsApp готовым сообщением.</p>
       </div>
     </section>
 
     <div class="menubar" id="menubar">
       <div class="container">
         <div class="tabs" role="tablist" aria-label="Разделы меню" id="menu-tabs">
-          <button class="tab is-active" role="tab" data-tab="drinks" aria-selected="true">Кофе и напитки</button>
-          <button class="tab" role="tab" data-tab="breakfast" aria-selected="false" tabindex="-1">Завтраки</button>
-          <button class="tab" role="tab" data-tab="kitchen" aria-selected="false" tabindex="-1">Кухня</button>
+          <button class="tab is-active" role="tab" data-tab="drinks" aria-selected="true" aria-controls="menu-panel">Кофе и напитки</button>
+          <button class="tab" role="tab" data-tab="food" aria-selected="false" aria-controls="menu-panel" tabindex="-1">Завтраки и кухня</button>
         </div>
         <nav class="chips" id="chips" aria-label="Категории"></nav>
       </div>
@@ -73,15 +73,29 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <a href="index.html" aria-label="RUMA — на главную"><img src="img/logo-mark-terra.png" alt="RUMA" width="64" height="48"></a>
-      <p class="footer__tag">Источник кофе · Новый Хушет</p>
-      <p class="footer__copy">© <span id="year">2026</span> RUMA</p>
+      <a class="footer__logo" href="index.html" aria-label="RUMA — на главную">
+        <img src="img/logo-cream-full.png" alt="RUMA — источник кофе" width="480" height="420" loading="lazy">
+      </a>
+      <nav class="footer__nav" aria-label="Навигация в подвале">
+        <a href="index.html">Главная</a>
+        <a href="index.html#about">О нас</a>
+        <a href="index.html#contacts">Контакты</a>
+      </nav>
+      <div class="footer__contacts">
+        <p>Новый Хушет, ул.&nbsp;Садовая,&nbsp;62</p>
+        <p>Ежедневно 07:30–23:00</p>
+        <p><a href="tel:+79064501429">+7 906 450-14-29</a></p>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© <span id="year">2026</span> RUMA — источник кофе</p>
+      <a class="footer__up" href="#top">Наверх <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14V3M4 7l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </footer>
 
-  <script src="js/menu.js?v=202610141524"></script>
-  <script src="js/ui.js?v=202610141524"></script>
-  <script src="js/cart.js?v=202610141524"></script>
-  <script src="js/menu-page.js?v=202610141524"></script>
+  <script src="js/menu.js?v=202610142246"></script>
+  <script src="js/ui.js?v=202610142246"></script>
+  <script src="js/cart.js?v=202610142246"></script>
+  <script src="js/menu-page.js?v=202610142246"></script>
 </body>
 </html>

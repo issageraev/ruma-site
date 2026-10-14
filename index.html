@@ -50,17 +50,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="img/hero.webp" type="image/webp">
-  <link rel="stylesheet" href="css/style.css?v=202610141524">
+  <link rel="preload" as="image" href="img/hero.webp" type="image/webp" fetchpriority="high">
+  <link rel="stylesheet" href="css/style.css?v=202610142246">
 </head>
-<body>
+<body id="top">
   <a class="skip-link" href="#main">Перейти к содержимому</a>
 
   <!-- ШАПКА -->
-  <header class="topbar" id="top">
+  <header class="topbar">
     <div class="topbar__inner">
-      <a href="#top" class="topbar__logo" aria-label="RUMA — на главную">
-        <img src="img/logo-mark-terra.png" alt="RUMA" width="64" height="48">
+      <a href="#top" class="topbar__logo" aria-label="RUMA — наверх страницы">
+        <img src="img/logo-wordmark.png" alt="RUMA" width="480" height="121">
       </a>
       <nav class="topbar__nav" id="site-nav" aria-label="Основная навигация">
         <a href="#menu">Меню</a>
@@ -72,7 +72,7 @@
         <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="topbar__count" id="header-count" hidden></span>
       </a>
-      <button class="topbar__burger" id="burger" type="button" aria-label="Открыть меню навигации" aria-expanded="false" aria-controls="site-nav">
+      <button class="topbar__burger" id="burger" type="button" aria-label="Открыть навигацию" aria-expanded="false" aria-controls="site-nav">
         <span></span><span></span>
       </button>
     </div>
@@ -82,25 +82,25 @@
 
     <!-- ГЛАВНЫЙ ЭКРАН -->
     <section class="hero">
-      <img class="hero__mark" src="img/logo-mark-terra.png" alt="" aria-hidden="true">
       <div class="container hero__inner">
         <div class="hero__text">
           <p class="eyebrow">Кофейня в Новом Хушете</p>
           <h1 class="hero__title">Здесь начинается хороший&nbsp;день.</h1>
           <p class="hero__lead">Спешелти-кофе, большие завтраки и место, где можно немного замедлиться.</p>
           <div class="hero__actions">
-            <a class="btn btn--primary" href="#menu">
+            <a class="btn btn--primary" href="#menu" data-menu-tab="food">
               Выбрать завтрак
               <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
             <a class="btn btn--text" href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">Как добраться</a>
           </div>
           <p class="hours-badge" id="hours-badge" aria-live="polite"></p>
+          <img class="hero__watermark" src="img/logo-watermark.png" width="520" height="455" alt="" aria-hidden="true">
         </div>
 
         <div class="hero__visual">
           <div class="arch">
-            <img src="img/hero.webp" width="692" height="1040" alt="Два кофе на деревянной подставке в интерьере RUMA" fetchpriority="high">
+            <img src="img/hero.webp" width="1489" height="1056" alt="Грибной суп-крем, эспрессо и вода с лимоном на деревянном столе" fetchpriority="high">
           </div>
           <div class="stamp" aria-hidden="true">
             <span>07:30</span>
@@ -112,34 +112,31 @@
 
     <!-- О НАС -->
     <section class="section about" id="about">
-      <div class="container split">
-        <p class="eyebrow split__label">RUMA — это</p>
-        <div class="split__body">
-          <p class="statement reveal">Кофейня по соседству, которая становится частью вашего дня. Бережно варим кофе, готовим понятную еду и всегда рады&nbsp;встрече.</p>
-          <ul class="facts reveal">
-            <li><b>07:30–23:00</b><span>каждый день</span></li>
-            <li><b>4,9&nbsp;<svg class="icon icon--star" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2l2 4.5 4.9.5-3.7 3.3 1.1 4.8L8 11.8 3.7 14.3l1.1-4.8L1.1 6.2 6 5.7z" fill="currentColor"/></svg></b><span>на Яндекс Картах</span></li>
-            <li><b>WhatsApp</b><span>заказ в пару касаний</span></li>
-          </ul>
-        </div>
+      <div class="container about__inner">
+        <p class="eyebrow">RUMA — это</p>
+        <p class="statement reveal">Кофейня по соседству, которая становится частью вашего дня. Бережно варим кофе, готовим понятную еду и&nbsp;всегда рады встрече.</p>
+        <ul class="facts reveal">
+          <li><b>07:30–23:00</b><span>каждый день</span></li>
+          <li><b>4,9&nbsp;<svg class="icon icon--star" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2l2 4.5 4.9.5-3.7 3.3 1.1 4.8L8 11.8 3.7 14.3l1.1-4.8L1.1 6.2 6 5.7z" fill="currentColor"/></svg></b><span>на Яндекс Картах</span></li>
+          <li><b>WhatsApp</b><span>заказ в пару касаний</span></li>
+        </ul>
       </div>
     </section>
 
     <!-- МЕНЮ -->
     <section class="section menu" id="menu">
       <div class="container">
-        <div class="split menu__head">
-          <p class="eyebrow split__label">Меню RUMA</p>
-          <div class="split__body">
+        <div class="section-head">
+          <div class="section-head__main">
+            <p class="eyebrow">Меню RUMA</p>
             <h2 class="display">Выберите свой&nbsp;ритм</h2>
-            <p class="menu__sub">Знакомые вкусы, локальные продукты и кофе, к которому хочется возвращаться.</p>
           </div>
+          <p class="section-head__aside">Знакомые вкусы, локальные продукты и кофе, к&nbsp;которому хочется возвращаться. Нажмите&nbsp;«+», чтобы собрать заказ.</p>
         </div>
 
         <div class="tabs" role="tablist" aria-label="Разделы меню" id="menu-tabs">
           <button class="tab is-active" role="tab" id="tab-drinks" data-tab="drinks" aria-selected="true" aria-controls="menu-panel">Кофе и напитки</button>
-          <button class="tab" role="tab" id="tab-breakfast" data-tab="breakfast" aria-selected="false" aria-controls="menu-panel" tabindex="-1">Завтраки</button>
-          <button class="tab" role="tab" id="tab-kitchen" data-tab="kitchen" aria-selected="false" aria-controls="menu-panel" tabindex="-1">Кухня</button>
+          <button class="tab" role="tab" id="tab-food" data-tab="food" aria-selected="false" aria-controls="menu-panel" tabindex="-1">Завтраки и кухня</button>
         </div>
 
         <div class="menu__panel" id="menu-panel" role="tabpanel" aria-labelledby="tab-drinks">
@@ -147,11 +144,11 @@
         </div>
 
         <div class="menu__foot">
-          <a class="link-arrow" id="full-menu-link" href="menu.html">
-            Смотреть полное меню
+          <a class="btn btn--outline" id="full-menu-link" href="menu.html">
+            Открыть полное меню
             <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
-          <p class="menu__swipe">Листайте вкладки свайпом</p>
+          <p class="menu__swipe">Свайп по списку — другой раздел</p>
         </div>
       </div>
     </section>
@@ -199,13 +196,9 @@
           </div>
 
           <div class="quotes__nav">
-            <button class="round-btn" id="quote-prev" type="button" aria-label="Предыдущий отзыв">
-              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
+            <button class="round-btn" id="quote-prev" type="button" aria-label="Предыдущий отзыв"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <span class="quotes__count" id="quote-count" aria-live="polite">01 / 06</span>
-            <button class="round-btn" id="quote-next" type="button" aria-label="Следующий отзыв">
-              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
+            <button class="round-btn" id="quote-next" type="button" aria-label="Следующий отзыв"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
       </div>
@@ -213,32 +206,60 @@
 
     <!-- КОНТАКТЫ -->
     <section class="section contacts" id="contacts">
-      <div class="container">
-        <p class="eyebrow">Встретимся в RUMA</p>
-        <div class="contacts__grid">
-          <h2 class="display contacts__title">Рядом.<br>Каждый&nbsp;день.</h2>
-
-          <ul class="contacts__info">
-            <li>
-              <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s6-5.2 6-10a6 6 0 10-12 0c0 4.8 6 10 6 10z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-              <span>Новый Хушет<br>ул. Садовая, 62</span>
-            </li>
-            <li>
-              <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 5.5V10l3 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Ежедневно<br>07:30–23:00<br><em class="hours-badge" id="contacts-hours-status" aria-live="polite"></em></span>
-            </li>
-          </ul>
-
-          <div class="contacts__actions">
-            <a class="btn btn--primary btn--block" href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">
+      <div class="container contacts__grid">
+        <div class="contacts__intro">
+          <p class="eyebrow">Встретимся в RUMA</p>
+          <h2 class="display">Рядом. Каждый&nbsp;день.</h2>
+          <p class="contacts__lead">Заходите на завтрак, за кофе с собой или просто посидеть. Заказ можно собрать заранее на сайте — приготовим к вашему приходу.</p>
+          <div class="contacts__cta">
+            <a class="btn btn--primary" href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">
               Построить маршрут
               <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <a class="contacts__link" href="tel:+79064501429">+7 906 450-14-29</a>
-            <a class="contacts__link" href="https://instagram.com/ruma.coffeebar" target="_blank" rel="noopener">@ruma.coffeebar</a>
+            <a class="btn btn--outline" href="tel:+79064501429">Позвонить</a>
           </div>
         </div>
 
+        <ul class="info-card">
+          <li class="info-row">
+            <span class="info-row__icon"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s6-5.2 6-10a6 6 0 10-12 0c0 4.8 6 10 6 10z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
+            <div>
+              <p class="info-row__label">Адрес</p>
+              <p class="info-row__value">Новый Хушет, ул.&nbsp;Садовая,&nbsp;62</p>
+            </div>
+          </li>
+          <li class="info-row">
+            <span class="info-row__icon"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 5.5V10l3 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div>
+              <p class="info-row__label">Часы работы</p>
+              <p class="info-row__value">Ежедневно 07:30–23:00 <span class="hours-badge" id="contacts-hours-status" aria-live="polite"></span></p>
+            </div>
+          </li>
+          <li class="info-row">
+            <span class="info-row__icon"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 8h10v4.5a4 4 0 01-4 4h-2a4 4 0 01-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M13.5 9.5h1a2 2 0 010 4h-1.2M7 3v2.5M10 3v2.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div>
+              <p class="info-row__label">Завтраки</p>
+              <p class="info-row__value" id="breakfast-hours">подаются с 9:00 до 22:00</p>
+            </div>
+          </li>
+          <li class="info-row">
+            <span class="info-row__icon"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 2.5h2l1.5 4-2 1.3a9 9 0 004.2 4.2l1.3-2 4 1.5v2a2 2 0 01-2 2A13.5 13.5 0 013.5 4.5a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span>
+            <div>
+              <p class="info-row__label">Телефон и WhatsApp</p>
+              <p class="info-row__value"><a href="tel:+79064501429">+7 906 450-14-29</a></p>
+            </div>
+          </li>
+          <li class="info-row">
+            <span class="info-row__icon"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="14.2" cy="5.8" r="0.9" fill="currentColor"/></svg></span>
+            <div>
+              <p class="info-row__label">Instagram</p>
+              <p class="info-row__value"><a href="https://instagram.com/ruma.coffeebar" target="_blank" rel="noopener">@ruma.coffeebar</a></p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="container">
         <div class="contacts__map">
           <iframe
             src="https://yandex.ru/map-widget/v1/?ll=47.553882%2C42.900879&z=16&mode=search&oid=74698574630&ol=biz"
@@ -250,16 +271,31 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <a href="#top" aria-label="RUMA — наверх"><img src="img/logo-mark-terra.png" alt="RUMA" width="64" height="48"></a>
-      <p class="footer__tag">Источник кофе · Новый Хушет</p>
-      <p class="footer__copy">© <span id="year">2026</span> RUMA</p>
+      <a class="footer__logo" href="#top" aria-label="RUMA — наверх страницы">
+        <img src="img/logo-cream-full.png" alt="RUMA — источник кофе" width="480" height="420" loading="lazy">
+      </a>
+      <nav class="footer__nav" aria-label="Навигация в подвале">
+        <a href="#menu">Меню</a>
+        <a href="menu.html">Полное меню</a>
+        <a href="#about">О нас</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <div class="footer__contacts">
+        <p>Новый Хушет, ул.&nbsp;Садовая,&nbsp;62</p>
+        <p>Ежедневно 07:30–23:00</p>
+        <p><a href="tel:+79064501429">+7 906 450-14-29</a></p>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© <span id="year">2026</span> RUMA — источник кофе</p>
+      <a class="footer__up" href="#top">Наверх <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14V3M4 7l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </footer>
 
   <!-- корзина и окна заказа подставляет js/cart.js -->
-  <script src="js/menu.js?v=202610141524"></script>
-  <script src="js/ui.js?v=202610141524"></script>
-  <script src="js/cart.js?v=202610141524"></script>
-  <script src="js/main.js?v=202610141524"></script>
+  <script src="js/menu.js?v=202610142246"></script>
+  <script src="js/ui.js?v=202610142246"></script>
+  <script src="js/cart.js?v=202610142246"></script>
+  <script src="js/main.js?v=202610142246"></script>
 </body>
 </html>
