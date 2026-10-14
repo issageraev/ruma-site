@@ -51,10 +51,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="img/hero.webp" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202610142246">
+  <link rel="stylesheet" href="css/style.css?v=202610142328">
 </head>
 <body id="top">
   <a class="skip-link" href="#main">Перейти к содержимому</a>
+
+  <!-- СТАТУС: открыто / закрыто (самый верх страницы) -->
+  <div class="statusbar">
+    <span class="statusbar__addr">Новый Хушет, ул.&nbsp;Садовая,&nbsp;62</span>
+    <span class="statusbar__sep" aria-hidden="true">·</span>
+    <p class="hours-badge" id="hours-badge" aria-live="polite"></p>
+  </div>
 
   <!-- ШАПКА -->
   <header class="topbar">
@@ -92,9 +99,7 @@
               Выбрать завтрак
               <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <a class="btn btn--text" href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">Как добраться</a>
           </div>
-          <p class="hours-badge" id="hours-badge" aria-live="polite"></p>
           <img class="hero__watermark" src="img/logo-watermark.png" width="520" height="455" alt="" aria-hidden="true">
         </div>
 
@@ -148,7 +153,7 @@
             Открыть полное меню
             <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
-          <p class="menu__swipe">Свайп по списку — другой раздел</p>
+          <p class="menu__swipe">Нажмите на кнопку, чтобы перейти в меню</p>
         </div>
       </div>
     </section>
@@ -293,9 +298,9 @@
   </footer>
 
   <!-- корзина и окна заказа подставляет js/cart.js -->
-  <script src="js/menu.js?v=202610142246"></script>
-  <script src="js/ui.js?v=202610142246"></script>
-  <script src="js/cart.js?v=202610142246"></script>
-  <script src="js/main.js?v=202610142246"></script>
+  <script src="js/menu.js?v=202610142328"></script>
+  <script src="js/ui.js?v=202610142328"></script>
+  <script src="js/cart.js?v=202610142328"></script>
+  <script src="js/main.js?v=202610142328"></script>
 </body>
 </html>

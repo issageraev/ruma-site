@@ -35,7 +35,8 @@
   function observeCategories() {
     if (observer) observer.disconnect();
     if (!("IntersectionObserver" in window)) return;
-    // «линия чтения» — полоса под липкой панелью; секция, пересекающая её, активна
+    // «линия чтения» — полоса под липкими панелями; секция, пересекающая её, активна
+    var top = document.querySelector(".topbar").offsetHeight + document.getElementById("menubar").offsetHeight + 24;
     observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
@@ -45,7 +46,7 @@
           chips.scrollTo({ left: link.offsetLeft - chips.clientWidth / 3, behavior: "smooth" });
         }
       });
-    }, { rootMargin: "-160px 0px -70% 0px" });
+    }, { rootMargin: "-" + top + "px 0px -65% 0px" });
     panel.querySelectorAll(".cat").forEach(function (s) { observer.observe(s); });
   }
 

@@ -152,12 +152,6 @@ fieldset { border: 0; min-width: 0; }
 .btn--primary:hover { background: var(--terra-hover); }
 .btn--outline { background: transparent; color: var(--terra); box-shadow: inset 0 0 0 1.5px var(--terra); }
 .btn--outline:hover { background: var(--terra); color: var(--cream); }
-.btn--text { padding-left: 0; padding-right: 0; background: none; color: var(--ink); position: relative; }
-.btn--text::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 12px;
-  height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 0.25s;
-}
-.btn--text:hover::after { transform: scaleX(1); }
 
 .link-arrow {
   display: inline-flex; align-items: center; gap: 10px;
@@ -166,6 +160,15 @@ fieldset { border: 0; min-width: 0; }
 .link-arrow .icon { transition: transform 0.2s; }
 .link-arrow:hover .icon { transform: translateX(4px); }
 .link-arrow--back:hover .icon { transform: translateX(-4px); }
+
+/* ---------- статус «открыто/закрыто» над шапкой ---------- */
+.statusbar {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 9px var(--gutter); background: var(--bg-alt);
+  font-size: 0.8125rem; font-weight: 500; color: var(--ink-soft); line-height: 1.4;
+}
+.statusbar__sep { opacity: 0.5; }
+.statusbar .hours-badge { font-size: inherit; }
 
 /* ---------- шапка ---------- */
 .topbar {
@@ -257,7 +260,6 @@ fieldset { border: 0; min-width: 0; }
   background: var(--ok); flex-shrink: 0;
 }
 .hours-badge--closed::before { background: var(--warn); }
-.hero .hours-badge { display: flex; margin-top: 28px; }
 .hours-badge:empty { display: none; }
 
 .hero__visual { position: relative; justify-self: end; width: 100%; max-width: 540px; }
@@ -273,14 +275,14 @@ fieldset { border: 0; min-width: 0; }
 
 .stamp {
   position: absolute; top: 4%; left: -8%;
-  width: clamp(96px, 11vw, 128px); aspect-ratio: 1; border-radius: 50%;
+  width: clamp(128px, 11vw, 144px); aspect-ratio: 1; border-radius: 50%;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   background: var(--terra); color: var(--cream);
-  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.3;
   transform: rotate(-9deg);
   box-shadow: 0 12px 28px -12px rgba(43, 29, 23, 0.5);
 }
-.stamp span:first-child { font-size: 0.9rem; letter-spacing: 0.08em; }
+.stamp span:first-child { font-size: 1.125rem; letter-spacing: 0.06em; }
 
 /* ---------- о нас ---------- */
 .statement {
@@ -300,30 +302,25 @@ fieldset { border: 0; min-width: 0; }
   margin-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--line);
 }
 .facts li { padding: 24px 24px 0 0; display: flex; flex-direction: column; gap: 4px; }
-.facts b { font-family: var(--font-display); font-weight: 500; font-size: 1.6rem; line-height: 1.2; color: var(--ink); display: inline-flex; align-items: center; gap: 4px; }
+.facts b { font-family: var(--font-body); font-weight: 600; font-size: 1.25rem; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
 .facts span { font-size: 0.875rem; color: var(--ink-soft); }
 
 /* ---------- меню ---------- */
 .menu { background: var(--bg-alt); }
 
-/* вкладки: без прокрутки внутри — иначе ряд «уезжал» вверх от лёгкого скролла */
+/* вкладки — центрированный переключатель; без прокрутки внутри ряда */
 .tabs {
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--line);
+  display: flex; width: fit-content; max-width: 100%; margin: 0 auto clamp(28px, 4vw, 44px);
+  padding: 4px; gap: 4px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line);
 }
 .tab {
-  position: relative; padding: 16px 24px; border: 0; background: none;
+  padding: 12px 24px; border: 0; border-radius: 999px; background: none;
   font-weight: 600; font-size: 0.95rem; color: var(--ink-soft); white-space: nowrap;
-  transition: color 0.2s;
-}
-.tab::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-  background: var(--terra); transform: scaleX(0); transition: transform 0.25s;
+  transition: color 0.2s, background-color 0.2s;
 }
 .tab:hover { color: var(--ink); }
-.tab.is-active { color: var(--terra); }
-.tab.is-active::after { transform: scaleX(1); }
+.tab.is-active { background: var(--terra); color: var(--cream); }
 
 /* список позиций — две колонки, строки с линиями, как в макете */
 .menu__panel { touch-action: pan-y; }
@@ -378,6 +375,7 @@ fieldset { border: 0; min-width: 0; }
 
 /* ---------- отзывы ---------- */
 .reviews { padding: var(--section-y) 0; }
+.reviews + .contacts { padding-top: 0; } /* чтобы отступ под карточкой равнялся отступу над ней */
 .reviews__card {
   background: var(--terra); color: var(--cream); border-radius: var(--radius);
   padding: clamp(40px, 7vw, 96px) clamp(20px, 6vw, 80px);
@@ -418,8 +416,9 @@ fieldset { border: 0; min-width: 0; }
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 48px clamp(40px, 6vw, 96px);
-  align-items: center;
+  align-items: start;
 }
+.contacts__intro .eyebrow { display: flex; }
 .contacts__intro .display { margin-top: 16px; }
 .contacts__lead { margin-top: 24px; max-width: 28em; font-size: 1.0625rem; line-height: 1.65; color: var(--ink-soft); }
 .contacts__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
@@ -480,8 +479,7 @@ fieldset { border: 0; min-width: 0; }
 
 /* ---------- страница полного меню ---------- */
 .menu-hero { padding: clamp(32px, 5vw, 56px) 0 clamp(28px, 4vw, 40px); }
-.menu-hero .eyebrow { display: flex; margin-top: 32px; }
-.menu-hero .display { margin-top: 12px; }
+.menu-hero .display { margin-top: 28px; }
 .menu-hero__sub { margin-top: 16px; max-width: 32em; color: var(--ink-soft); }
 
 .menubar {
@@ -490,12 +488,19 @@ fieldset { border: 0; min-width: 0; }
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-.menubar .tabs { border-bottom: 0; }
+.menubar .container { display: grid; gap: 14px; padding-top: 14px; padding-bottom: 14px; }
+.menubar .tabs { margin-bottom: 0; }
 .chips {
-  display: flex; gap: 8px; padding: 2px 0 14px;
+  display: flex; gap: 8px;
   overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none;
 }
+/* пустые элементы по краям центрируют чипсы, а если не влезают — лента просто листается с начала */
+.chips::before, .chips::after { content: ""; margin: auto; }
 .chips::-webkit-scrollbar { display: none; }
+@media (min-width: 961px) {
+  .chips { flex-wrap: wrap; justify-content: center; overflow: visible; }
+  .chips::before, .chips::after { display: none; }
+}
 .chip {
   flex-shrink: 0; padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px;
   font-size: 0.875rem; font-weight: 500; text-decoration: none; white-space: nowrap;
@@ -504,11 +509,12 @@ fieldset { border: 0; min-width: 0; }
 .chip:hover { border-color: var(--ink-soft); }
 .chip.is-active { background: var(--terra); border-color: var(--terra); color: var(--cream); }
 
-.full-menu { padding-top: 24px; padding-bottom: var(--section-y); }
-.cat { padding-top: clamp(28px, 4vw, 48px); scroll-margin-top: 170px; }
+.page-menu .topbar__order { display: none; } /* на странице меню заказ открывает плашка снизу */
+.full-menu { padding-top: 8px; padding-bottom: var(--section-y); }
+.cat { padding-top: clamp(32px, 4vw, 52px); scroll-margin-top: 220px; }
 .cat__title {
   font-family: var(--font-display); font-weight: 400; font-size: clamp(1.7rem, 3vw, 2.4rem);
-  line-height: 1.2; color: var(--terra); padding-bottom: 8px; border-bottom: 1px solid var(--terra);
+  line-height: 1.2; color: var(--terra); padding-bottom: 4px;
 }
 .cat__note { font-family: var(--font-body); font-size: 0.875rem; color: var(--ink-soft); margin-left: 8px; }
 
@@ -725,12 +731,14 @@ fieldset { border: 0; min-width: 0; }
   .topbar__nav a::after { display: none; }
 
   .hero__actions .btn--primary { width: 100%; }
-  .stamp { top: 3%; left: 2%; width: 92px; }
+  .statusbar__addr, .statusbar__sep { display: none; }
+  .stamp { top: 3%; left: 2%; width: 128px; }
 
   .facts { grid-template-columns: 1fr; }
   .facts li { flex-direction: row; align-items: baseline; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--line); }
 
-  .tab { flex: 1 1 0; padding: 16px 8px; font-size: 0.9rem; text-align: center; }
+  .tabs { width: 100%; }
+  .tab { flex: 1 1 0; padding: 12px 8px; font-size: 0.9rem; text-align: center; }
   .items { grid-template-columns: 1fr; }
   .item { grid-template-columns: 24px minmax(0, 1fr) auto auto; gap: 0 12px; padding: 18px 0; }
   .page-menu .item { grid-template-columns: minmax(0, 1fr) auto auto; }
