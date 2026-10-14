@@ -3,176 +3,263 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RUMA — источник кофе | Новый Хушет, ул. Садовая 62</title>
-  <meta name="description" content="Кофейня RUMA в Новом Хушете — специальный кофе, завтраки, боулы и лимонады. ул. Садовая 62.">
+  <title>RUMA — кофейня в Новом Хушете | Садовая 62</title>
+  <meta name="description" content="Кофейня RUMA в Новом Хушете: специальный кофе, большие завтраки, боулы, пицца и лимонады. Ежедневно 7:30–23:00, ул. Садовая 62. Заказ в WhatsApp.">
+  <meta name="theme-color" content="#F5E9D9">
+  <link rel="canonical" href="https://issageraev.github.io/ruma-site/">
   <link rel="icon" type="image/png" href="img/favicon.png">
+
+  <!-- Open Graph: как сайт выглядит при отправке ссылки в мессенджерах -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="RUMA — источник кофе">
+  <meta property="og:title" content="RUMA — кофейня в Новом Хушете">
+  <meta property="og:description" content="Спешелти-кофе, большие завтраки и место, где можно немного замедлиться. Садовая 62, ежедневно 7:30–23:00.">
+  <meta property="og:url" content="https://issageraev.github.io/ruma-site/">
+  <meta property="og:image" content="https://issageraev.github.io/ruma-site/img/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Данные для поисковиков: карточка заведения -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CafeOrCoffeeShop",
+    "name": "RUMA — источник кофе",
+    "url": "https://issageraev.github.io/ruma-site/",
+    "image": "https://issageraev.github.io/ruma-site/img/og.jpg",
+    "telephone": "+79064501429",
+    "servesCuisine": ["Кофе", "Завтраки"],
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Садовая, 62",
+      "addressLocality": "Новый Хушет",
+      "addressCountry": "RU"
+    },
+    "geo": { "@type": "GeoCoordinates", "latitude": 42.900879, "longitude": 47.553882 },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "07:30",
+      "closes": "23:00"
+    },
+    "sameAs": ["https://instagram.com/ruma.coffeebar", "https://yandex.ru/maps/org/ruma/74698574630/"]
+  }
+  </script>
+
+  <script>document.documentElement.classList.add("js");</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="img/hero.webp" type="image/webp">
+  <link rel="stylesheet" href="css/style.css?v=202610141524">
 </head>
 <body>
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
 
   <!-- ШАПКА -->
-  <header class="topbar">
-    <a href="#top" class="topbar__brand">RUMA</a>
-    <nav class="topbar__nav">
-      <a href="#menu">Меню</a>
-      <a href="#reviews">Отзывы</a>
-      <a href="#contacts">Контакты</a>
-    </nav>
+  <header class="topbar" id="top">
+    <div class="topbar__inner">
+      <a href="#top" class="topbar__logo" aria-label="RUMA — на главную">
+        <img src="img/logo-mark-terra.png" alt="RUMA" width="64" height="48">
+      </a>
+      <nav class="topbar__nav" id="site-nav" aria-label="Основная навигация">
+        <a href="#menu">Меню</a>
+        <a href="#about">О нас</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <a class="topbar__order" id="header-order" href="#menu">
+        <span>Заказать</span>
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="topbar__count" id="header-count" hidden></span>
+      </a>
+      <button class="topbar__burger" id="burger" type="button" aria-label="Открыть меню навигации" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span>
+      </button>
+    </div>
   </header>
 
-  <!-- ГЛАВНЫЙ ЭКРАН -->
-  <section class="hero" id="top">
-    <img class="hero__logo" src="img/logo-cream.png" alt="RUMA — источник кофе">
-    <p class="hero__address">Новый Хушет&nbsp;· ул.&nbsp;Садовая&nbsp;62</p>
-    <p class="hours-badge" id="hours-badge"></p>
-    <div class="hero__actions">
-      <a class="btn btn--light" href="#menu">Смотреть меню</a>
-      <a class="btn btn--ghost" href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">Как добраться</a>
-    </div>
-  </section>
+  <main id="main">
 
-  <!-- МЕНЮ -->
-  <section class="menu" id="menu">
-    <div class="container">
-      <h2 class="section-title">Меню</h2>
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <section class="hero">
+      <img class="hero__mark" src="img/logo-mark-terra.png" alt="" aria-hidden="true">
+      <div class="container hero__inner">
+        <div class="hero__text">
+          <p class="eyebrow">Кофейня в Новом Хушете</p>
+          <h1 class="hero__title">Здесь начинается хороший&nbsp;день.</h1>
+          <p class="hero__lead">Спешелти-кофе, большие завтраки и место, где можно немного замедлиться.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#menu">
+              Выбрать завтрак
+              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="btn btn--text" href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">Как добраться</a>
+          </div>
+          <p class="hours-badge" id="hours-badge" aria-live="polite"></p>
+        </div>
 
-      <div class="menu__tabs" role="tablist">
-        <button class="tab is-active" data-tab="drinks" role="tab" aria-selected="true">Напитки</button>
-        <button class="tab" data-tab="food" role="tab" aria-selected="false">Завтраки и кухня</button>
+        <div class="hero__visual">
+          <div class="arch">
+            <img src="img/hero.webp" width="692" height="1040" alt="Два кофе на деревянной подставке в интерьере RUMA" fetchpriority="high">
+          </div>
+          <div class="stamp" aria-hidden="true">
+            <span>07:30</span>
+            <span>первый кофе</span>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <div class="menu__panel" id="menu-panel">
-        <!-- категории рендерятся из js/menu.js -->
+    <!-- О НАС -->
+    <section class="section about" id="about">
+      <div class="container split">
+        <p class="eyebrow split__label">RUMA — это</p>
+        <div class="split__body">
+          <p class="statement reveal">Кофейня по соседству, которая становится частью вашего дня. Бережно варим кофе, готовим понятную еду и всегда рады&nbsp;встрече.</p>
+          <ul class="facts reveal">
+            <li><b>07:30–23:00</b><span>каждый день</span></li>
+            <li><b>4,9&nbsp;<svg class="icon icon--star" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2l2 4.5 4.9.5-3.7 3.3 1.1 4.8L8 11.8 3.7 14.3l1.1-4.8L1.1 6.2 6 5.7z" fill="currentColor"/></svg></b><span>на Яндекс Картах</span></li>
+            <li><b>WhatsApp</b><span>заказ в пару касаний</span></li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ОТЗЫВЫ -->
-  <section class="reviews" id="reviews">
-    <div class="container">
-      <h2 class="section-title section-title--light">Отзывы</h2>
+    <!-- МЕНЮ -->
+    <section class="section menu" id="menu">
+      <div class="container">
+        <div class="split menu__head">
+          <p class="eyebrow split__label">Меню RUMA</p>
+          <div class="split__body">
+            <h2 class="display">Выберите свой&nbsp;ритм</h2>
+            <p class="menu__sub">Знакомые вкусы, локальные продукты и кофе, к которому хочется возвращаться.</p>
+          </div>
+        </div>
 
-      <div class="reviews__ratings">
-        <a class="rating-badge" href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">
-          <span class="rating-badge__score">4,9</span>
-          <span class="rating-badge__src">Яндекс Карты</span>
-        </a>
-        <a class="rating-badge" href="https://2gis.ru/makhachkala/firm/70000001103341689/tab/reviews" target="_blank" rel="noopener">
-          <span class="rating-badge__score">4,8</span>
-          <span class="rating-badge__src">2ГИС</span>
-        </a>
-      </div>
+        <div class="tabs" role="tablist" aria-label="Разделы меню" id="menu-tabs">
+          <button class="tab is-active" role="tab" id="tab-drinks" data-tab="drinks" aria-selected="true" aria-controls="menu-panel">Кофе и напитки</button>
+          <button class="tab" role="tab" id="tab-breakfast" data-tab="breakfast" aria-selected="false" aria-controls="menu-panel" tabindex="-1">Завтраки</button>
+          <button class="tab" role="tab" id="tab-kitchen" data-tab="kitchen" aria-selected="false" aria-controls="menu-panel" tabindex="-1">Кухня</button>
+        </div>
 
-      <div class="reviews__grid">
-        <figure class="review">
-          <blockquote>«Рада, что в Хушете есть место с отличным кофе. Матча хороша, десерты суперские — лавандовый тарт просто восхитителен!»</blockquote>
-          <figcaption>Саида С. · Яндекс Карты</figcaption>
-        </figure>
-        <figure class="review">
-          <blockquote>«Уютное место для встреч. Том ям очень вкусный, бургер из новинок тоже на высоте. Интерьер со вкусом — спасибо команде!»</blockquote>
-          <figcaption>BONU__1113 · Яндекс Карты</figcaption>
-        </figure>
-        <figure class="review">
-          <blockquote>«Комфортные условия, быстрое обслуживание, вкусная еда. Омлет с индейкой, рисовая каша, пицца, дагестанский завтрак — семья осталась довольна»</blockquote>
-          <figcaption>Клубович С. · Яндекс Карты</figcaption>
-        </figure>
-        <figure class="review">
-          <blockquote>«Кофе на высшем уровне, прекрасная кухня и атмосфера. Почти каждый день здесь — приятно, что в нашем посёлке есть заведение такого уровня»</blockquote>
-          <figcaption>Магомед Ш. · Яндекс Карты</figcaption>
-        </figure>
-        <figure class="review">
-          <blockquote>«Очень вкусное кофе, пиццы отличные. Приятный персонал, уютная атмосфера, десерты топ — шоты мои любимые»</blockquote>
-          <figcaption>Гость · Яндекс Карты</figcaption>
-        </figure>
-        <figure class="review">
-          <blockquote>«Приятное место: вкусный кофе, свежие десерты, обслуживание на высоте. Атмосфера располагает остаться подольше — однозначно рекомендую»</blockquote>
-          <figcaption>Гость · Яндекс Карты</figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
+        <div class="menu__panel" id="menu-panel" role="tabpanel" aria-labelledby="tab-drinks">
+          <!-- позиции рендерятся из js/menu.js -->
+        </div>
 
-  <!-- КОНТАКТЫ -->
-  <section class="contacts" id="contacts">
-    <div class="container contacts__inner">
-      <div class="contacts__info">
-        <img class="contacts__logo" src="img/logo-terra.png" alt="RUMA">
-        <p class="contacts__line">Новый Хушет, ул. Садовая 62</p>
-        <p class="contacts__line">Ежедневно 7:30–23:00</p>
-        <p class="contacts__line hours-badge" id="contacts-hours-status"></p>
-        <p class="contacts__line"><a href="tel:+79064501429">+7 906 450-14-29</a></p>
-        <p class="contacts__line"><a href="https://instagram.com/ruma.coffeebar" target="_blank" rel="noopener">@ruma.coffeebar</a></p>
+        <div class="menu__foot">
+          <a class="link-arrow" id="full-menu-link" href="menu.html">
+            Смотреть полное меню
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <p class="menu__swipe">Листайте вкладки свайпом</p>
+        </div>
       </div>
-      <div class="contacts__map">
-        <iframe
-          src="https://yandex.ru/map-widget/v1/?ll=47.553882%2C42.900879&z=16&mode=search&oid=74698574630&ol=biz"
-          title="RUMA на карте" loading="lazy" allowfullscreen></iframe>
+    </section>
+
+    <!-- ОТЗЫВЫ -->
+    <section class="reviews" id="reviews" aria-labelledby="reviews-title">
+      <div class="container">
+        <div class="reviews__card">
+          <h2 class="visually-hidden" id="reviews-title">Отзывы гостей</h2>
+          <div class="reviews__ratings">
+            <a href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">
+              <svg class="icon icon--star" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2l2 4.5 4.9.5-3.7 3.3 1.1 4.8L8 11.8 3.7 14.3l1.1-4.8L1.1 6.2 6 5.7z" fill="currentColor"/></svg>
+              <b>4,9</b> на Яндекс Картах
+            </a>
+            <a href="https://2gis.ru/makhachkala/firm/70000001103341689/tab/reviews" target="_blank" rel="noopener">
+              <b>4,8</b> в 2ГИС
+            </a>
+          </div>
+
+          <div class="quotes" id="quotes" tabindex="0" role="region" aria-roledescription="карусель" aria-label="Отзывы гостей">
+            <figure class="quote">
+              <blockquote>«Кофе на высшем уровне, прекрасная кухня и атмосфера. Приятно, что в нашем посёлке есть место такого уровня»</blockquote>
+              <figcaption>Магомед Ш. · Яндекс Карты</figcaption>
+            </figure>
+            <figure class="quote">
+              <blockquote>«Рада, что в Хушете есть место с отличным кофе. Матча хороша, десерты суперские — лавандовый тарт просто восхитителен!»</blockquote>
+              <figcaption>Саида С. · Яндекс Карты</figcaption>
+            </figure>
+            <figure class="quote">
+              <blockquote>«Уютное место для встреч. Том ям очень вкусный, бургер из новинок тоже на высоте. Интерьер со вкусом — спасибо команде!»</blockquote>
+              <figcaption>BONU__1113 · Яндекс Карты</figcaption>
+            </figure>
+            <figure class="quote">
+              <blockquote>«Комфортные условия, быстрое обслуживание, вкусная еда. Омлет с индейкой, рисовая каша, пицца, дагестанский завтрак — семья осталась довольна»</blockquote>
+              <figcaption>Клубович С. · Яндекс Карты</figcaption>
+            </figure>
+            <figure class="quote">
+              <blockquote>«Очень вкусное кофе, пиццы отличные. Приятный персонал, уютная атмосфера, десерты топ — шоты мои любимые»</blockquote>
+              <figcaption>Гость · Яндекс Карты</figcaption>
+            </figure>
+            <figure class="quote">
+              <blockquote>«Приятное место: вкусный кофе, свежие десерты, обслуживание на высоте. Атмосфера располагает остаться подольше — однозначно рекомендую»</blockquote>
+              <figcaption>Гость · Яндекс Карты</figcaption>
+            </figure>
+          </div>
+
+          <div class="quotes__nav">
+            <button class="round-btn" id="quote-prev" type="button" aria-label="Предыдущий отзыв">
+              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="quotes__count" id="quote-count" aria-live="polite">01 / 06</span>
+            <button class="round-btn" id="quote-next" type="button" aria-label="Следующий отзыв">
+              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- КОНТАКТЫ -->
+    <section class="section contacts" id="contacts">
+      <div class="container">
+        <p class="eyebrow">Встретимся в RUMA</p>
+        <div class="contacts__grid">
+          <h2 class="display contacts__title">Рядом.<br>Каждый&nbsp;день.</h2>
+
+          <ul class="contacts__info">
+            <li>
+              <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s6-5.2 6-10a6 6 0 10-12 0c0 4.8 6 10 6 10z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+              <span>Новый Хушет<br>ул. Садовая, 62</span>
+            </li>
+            <li>
+              <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 5.5V10l3 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Ежедневно<br>07:30–23:00<br><em class="hours-badge" id="contacts-hours-status" aria-live="polite"></em></span>
+            </li>
+          </ul>
+
+          <div class="contacts__actions">
+            <a class="btn btn--primary btn--block" href="https://yandex.ru/maps/org/ruma/74698574630/" target="_blank" rel="noopener">
+              Построить маршрут
+              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="contacts__link" href="tel:+79064501429">+7 906 450-14-29</a>
+            <a class="contacts__link" href="https://instagram.com/ruma.coffeebar" target="_blank" rel="noopener">@ruma.coffeebar</a>
+          </div>
+        </div>
+
+        <div class="contacts__map">
+          <iframe
+            src="https://yandex.ru/map-widget/v1/?ll=47.553882%2C42.900879&z=16&mode=search&oid=74698574630&ol=biz"
+            title="RUMA на карте" loading="lazy" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
-    <p>© <span id="year"></span> RUMA — источник кофе</p>
+    <div class="container footer__inner">
+      <a href="#top" aria-label="RUMA — наверх"><img src="img/logo-mark-terra.png" alt="RUMA" width="64" height="48"></a>
+      <p class="footer__tag">Источник кофе · Новый Хушет</p>
+      <p class="footer__copy">© <span id="year">2026</span> RUMA</p>
+    </div>
   </footer>
 
-  <!-- ПЛАШКА КОРЗИНЫ -->
-  <div class="cart-bar" id="cart-bar" hidden>
-    <span class="cart-bar__info" id="cart-bar-info"></span>
-    <button class="btn btn--light cart-bar__btn" id="cart-bar-open">Оформить заказ</button>
-  </div>
-
-  <!-- ВЫБОР ВАРИАНТА (объём/размер) -->
-  <div class="overlay" id="variant-picker" hidden>
-    <div class="overlay__backdrop" data-close></div>
-    <div class="dialog dialog--small">
-      <h4 class="dialog__title" id="variant-title"></h4>
-      <div class="variant-options" id="variant-options"></div>
-      <button class="dialog__close" data-close aria-label="Закрыть">✕</button>
-    </div>
-  </div>
-
-  <!-- ОФОРМЛЕНИЕ ЗАКАЗА -->
-  <div class="overlay" id="cart-sheet" hidden>
-    <div class="overlay__backdrop" data-close></div>
-    <div class="dialog">
-      <h4 class="dialog__title">Ваш заказ</h4>
-      <ul class="cart-items" id="cart-items"></ul>
-      <div class="cart-totalrow">
-        <button class="cart-clear" id="cart-clear">Очистить всё</button>
-        <span>Итого: <b id="cart-total"></b></span>
-      </div>
-
-      <p class="order-type-label">Как вам удобно?</p>
-      <div class="order-types">
-        <button class="order-type" data-type="С собой">С собой</button>
-        <button class="order-type" data-type="На месте">На месте</button>
-        <button class="order-type" data-type="Заберу заказ">Заберу заказ</button>
-        <button class="order-type" data-type="Отправить на такси">Отправить на такси</button>
-      </div>
-
-      <div class="order-extra" id="order-extra" hidden>
-        <label class="order-extra__label" id="order-extra-label" for="order-extra-input"></label>
-        <input class="order-extra__input" id="order-extra-input" type="text" maxlength="120">
-      </div>
-
-      <div class="order-extra">
-        <label class="order-extra__label" for="order-comment">Комментарий к заказу</label>
-        <input class="order-extra__input" id="order-comment" type="text" maxlength="200"
-               placeholder="необязательно — пожелания, аллергии, «без сахара»…">
-      </div>
-
-      <a class="order-submit" id="order-btn" href="#" target="_blank" rel="noopener">
-        Заказать в WhatsApp
-      </a>
-      <p class="order-hint">Откроется чат WhatsApp с готовым текстом заказа — останется нажать «Отправить»</p>
-      <button class="dialog__close" data-close aria-label="Закрыть">✕</button>
-    </div>
-  </div>
-
-  <script src="js/menu.js?v=4"></script>
-  <script src="js/main.js?v=3"></script>
+  <!-- корзина и окна заказа подставляет js/cart.js -->
+  <script src="js/menu.js?v=202610141524"></script>
+  <script src="js/ui.js?v=202610141524"></script>
+  <script src="js/cart.js?v=202610141524"></script>
+  <script src="js/main.js?v=202610141524"></script>
 </body>
 </html>

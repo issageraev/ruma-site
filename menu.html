@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Полное меню — RUMA, Новый Хушет</title>
+  <meta name="description" content="Полное меню кофейни RUMA: кофе, чай, лимонады, завтраки, боулы, пиццы и закуски. Можно собрать заказ и отправить его в WhatsApp.">
+  <meta name="theme-color" content="#F5E9D9">
+  <link rel="canonical" href="https://issageraev.github.io/ruma-site/menu.html">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="Меню RUMA — кофе, завтраки, кухня">
+  <meta property="og:url" content="https://issageraev.github.io/ruma-site/menu.html">
+  <meta property="og:image" content="https://issageraev.github.io/ruma-site/img/og.jpg">
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=202610141524">
+</head>
+<body class="page-menu">
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+
+  <header class="topbar" id="top">
+    <div class="topbar__inner">
+      <a href="index.html" class="topbar__logo" aria-label="RUMA — на главную">
+        <img src="img/logo-mark-terra.png" alt="RUMA" width="64" height="48">
+      </a>
+      <nav class="topbar__nav" id="site-nav" aria-label="Основная навигация">
+        <a href="index.html#menu">Меню</a>
+        <a href="index.html#about">О нас</a>
+        <a href="index.html#contacts">Контакты</a>
+      </nav>
+      <a class="topbar__order" id="header-order" href="#main">
+        <span>Заказать</span>
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="topbar__count" id="header-count" hidden></span>
+      </a>
+      <button class="topbar__burger" id="burger" type="button" aria-label="Открыть меню навигации" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="menu-hero">
+      <div class="container">
+        <a class="link-arrow link-arrow--back" href="index.html">
+          <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          На главную
+        </a>
+        <h1 class="display">Полное меню</h1>
+        <p class="menu__sub">Нажмите «+», чтобы собрать заказ — он уйдёт к нам в WhatsApp готовым сообщением.</p>
+      </div>
+    </section>
+
+    <div class="menubar" id="menubar">
+      <div class="container">
+        <div class="tabs" role="tablist" aria-label="Разделы меню" id="menu-tabs">
+          <button class="tab is-active" role="tab" data-tab="drinks" aria-selected="true">Кофе и напитки</button>
+          <button class="tab" role="tab" data-tab="breakfast" aria-selected="false" tabindex="-1">Завтраки</button>
+          <button class="tab" role="tab" data-tab="kitchen" aria-selected="false" tabindex="-1">Кухня</button>
+        </div>
+        <nav class="chips" id="chips" aria-label="Категории"></nav>
+      </div>
+    </div>
+
+    <div class="container full-menu" id="menu-panel" role="tabpanel">
+      <!-- категории рендерятся из js/menu.js -->
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <a href="index.html" aria-label="RUMA — на главную"><img src="img/logo-mark-terra.png" alt="RUMA" width="64" height="48"></a>
+      <p class="footer__tag">Источник кофе · Новый Хушет</p>
+      <p class="footer__copy">© <span id="year">2026</span> RUMA</p>
+    </div>
+  </footer>
+
+  <script src="js/menu.js?v=202610141524"></script>
+  <script src="js/ui.js?v=202610141524"></script>
+  <script src="js/cart.js?v=202610141524"></script>
+  <script src="js/menu-page.js?v=202610141524"></script>
+</body>
+</html>
