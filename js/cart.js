@@ -79,10 +79,14 @@ window.RumaCart = (function () {
 
           '<fieldset class="order-step">' +
             '<legend class="order-step__title"><span class="order-step__num">2</span>Детали</legend>' +
-            '<div class="field" id="order-extra" hidden>' +
-              '<label class="field__label" id="order-extra-label" for="order-extra-input"></label>' +
-              '<input class="field__input" id="order-extra-input" type="text" maxlength="120" autocomplete="off" aria-describedby="order-extra-error">' +
-              '<p class="field__error" id="order-extra-error" hidden></p>' +
+            '<div class="collapse" id="order-extra" inert>' +
+              '<div class="collapse__inner">' +
+                '<div class="field">' +
+                  '<label class="field__label" id="order-extra-label" for="order-extra-input"></label>' +
+                  '<input class="field__input" id="order-extra-input" type="text" maxlength="120" autocomplete="off" aria-describedby="order-extra-error">' +
+                  '<p class="field__error" id="order-extra-error" hidden></p>' +
+                "</div>" +
+              "</div>" +
             "</div>" +
             '<div class="field">' +
               '<label class="field__label" for="order-comment">Комментарий <span class="field__opt">— необязательно</span></label>' +
@@ -235,19 +239,27 @@ window.RumaCart = (function () {
     }).join("");
     sheetTotal.textContent = money(total());
 
+    applyOrderType();
+    updateBadges();
+  }
+
+  // формат заказа: отмечаем карточку и плавно раскрываем/сворачиваем доп. поле.
+  // Подпись поля меняем только когда оно нужно — при сворачивании текст остаётся до конца анимации.
+  function applyOrderType() {
     document.querySelectorAll('input[name="order-type"]').forEach(function (r) {
       r.checked = r.value === orderType;
     });
     var extra = typeByValue(orderType).extra;
-    extraWrap.hidden = !extra;
     if (extra) {
       document.getElementById("order-extra-label").innerHTML = esc(extra.label) +
         (extra.required ? "" : ' <span class="field__opt">— можно уточнить в чате</span>');
       extraInput.placeholder = extra.placeholder;
       extraInput.required = !!extra.required;
     }
+    extraWrap.classList.toggle("is-open", !!extra);
+    if (extra) extraWrap.removeAttribute("inert"); // свёрнутое поле не должно ловить Tab
+    else extraWrap.setAttribute("inert", "");
     setError("");
-    updateBadges();
   }
 
   function setError(text) {
@@ -378,7 +390,7 @@ window.RumaCart = (function () {
     r.addEventListener("change", function () {
       orderType = r.value;
       saveCart();
-      update();
+      applyOrderType();
     });
   });
 

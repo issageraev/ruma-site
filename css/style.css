@@ -27,6 +27,7 @@
   --section-y: clamp(72px, 10vw, 128px);
   --radius: 20px;
   --header-h: 72px;
+  --anchor-gap: clamp(32px, 5vw, 64px); /* расстояние от шапки до подписи секции после перехода по ссылке */
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -87,7 +88,8 @@ fieldset { border: 0; min-width: 0; }
 /* ---------- типографика ---------- */
 /* подпись над заголовком секции: «МЕНЮ RUMA», «RUMA — ЭТО» */
 .eyebrow {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: 12px;
   font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);
@@ -116,7 +118,16 @@ fieldset { border: 0; min-width: 0; }
   text-wrap: balance;
 }
 
-.section { padding: var(--section-y) 0; }
+.section {
+  --pad-top: var(--section-y);
+  --pad-bottom: var(--section-y);
+  padding: var(--pad-top) 0 var(--pad-bottom);
+  /* scroll-padding у <html> уже отодвигает на высоту шапки + 8px; здесь вычитаем собственный верхний
+     отступ секции, чтобы подпись («RUMA — это», «Меню RUMA»…) всегда вставала на --anchor-gap под шапкой */
+  scroll-margin-top: calc(var(--anchor-gap) - 8px - var(--pad-top));
+}
+/* «О нас» — компактнее остальных секций */
+.about { --pad-top: clamp(40px, 5vw, 64px); --pad-bottom: clamp(40px, 5vw, 64px); }
 
 /* шапка секции: подпись + заголовок слева, пояснение справа */
 .section-head {
@@ -308,19 +319,29 @@ fieldset { border: 0; min-width: 0; }
 /* ---------- меню ---------- */
 .menu { background: var(--bg-alt); }
 
-/* вкладки — центрированный переключатель; без прокрутки внутри ряда */
+/* вкладки — центрированный переключатель; активный пункт подсвечивает «бегунок», он скользит между пунктами */
 .tabs {
+  position: relative;
   display: flex; width: fit-content; max-width: 100%; margin: 0 auto clamp(28px, 4vw, 44px);
   padding: 4px; gap: 4px; border-radius: 999px;
   background: var(--surface); border: 1px solid var(--line);
 }
+.tabs::before {
+  content: ""; position: absolute; top: 4px; bottom: 4px; left: 0; z-index: 0;
+  width: var(--thumb-w, 0); border-radius: 999px; background: var(--terra);
+  transform: translateX(var(--thumb-x, 0)); opacity: 0;
+}
+.tabs.has-thumb::before { opacity: 1; }
+.tabs.thumb-anim::before { transition: transform 0.4s cubic-bezier(0.3, 0.8, 0.3, 1), width 0.4s cubic-bezier(0.3, 0.8, 0.3, 1); }
 .tab {
+  position: relative; z-index: 1;
   padding: 12px 24px; border: 0; border-radius: 999px; background: none;
   font-weight: 600; font-size: 0.95rem; color: var(--ink-soft); white-space: nowrap;
-  transition: color 0.2s, background-color 0.2s;
+  transition: color 0.3s;
 }
 .tab:hover { color: var(--ink); }
-.tab.is-active { background: var(--terra); color: var(--cream); }
+.tab.is-active { color: var(--cream); }
+.tabs:not(.has-thumb) .tab.is-active { background: var(--terra); } /* пока скрипт не расставил бегунок */
 
 /* список позиций — две колонки, строки с линиями, как в макете */
 .menu__panel { touch-action: pan-y; }
@@ -368,14 +389,10 @@ fieldset { border: 0; min-width: 0; }
 .menu__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 40px; }
 .menu__swipe { display: none; font-size: 0.8125rem; color: var(--ink-soft); }
 
-.menu__panel.slide-next { animation: slide-in-next 0.35s ease-out; }
-.menu__panel.slide-prev { animation: slide-in-prev 0.35s ease-out; }
-@keyframes slide-in-next { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
-@keyframes slide-in-prev { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: none; } }
 
 /* ---------- отзывы ---------- */
 .reviews { padding: var(--section-y) 0; }
-.reviews + .contacts { padding-top: 0; } /* чтобы отступ под карточкой равнялся отступу над ней */
+.reviews + .contacts { --pad-top: 0px; } /* чтобы отступ под карточкой равнялся отступу над ней */
 .reviews__card {
   background: var(--terra); color: var(--cream); border-radius: var(--radius);
   padding: clamp(40px, 7vw, 96px) clamp(20px, 6vw, 80px);
@@ -418,7 +435,6 @@ fieldset { border: 0; min-width: 0; }
   gap: 48px clamp(40px, 6vw, 96px);
   align-items: start;
 }
-.contacts__intro .eyebrow { display: flex; }
 .contacts__intro .display { margin-top: 16px; }
 .contacts__lead { margin-top: 24px; max-width: 28em; font-size: 1.0625rem; line-height: 1.65; color: var(--ink-soft); }
 .contacts__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
@@ -455,27 +471,27 @@ fieldset { border: 0; min-width: 0; }
 .contacts__map iframe { width: 100%; height: 100%; border: 0; display: block; }
 
 /* ---------- подвал ---------- */
-.footer { background: var(--terra); color: var(--cream); padding: clamp(48px, 6vw, 72px) 0 24px; }
+.footer { background: var(--terra); color: var(--cream); padding: clamp(32px, 4vw, 44px) 0 18px; }
 .footer a { text-decoration: none; }
 .footer :focus-visible { outline-color: var(--cream); }
 .footer__inner {
   display: grid; grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 40px clamp(48px, 8vw, 120px); align-items: start;
+  gap: 28px clamp(40px, 7vw, 96px); align-items: start;
 }
 .footer__logo { justify-self: start; }
-.footer__logo img { width: 120px; height: auto; }
-.footer__nav { display: grid; gap: 10px; font-weight: 600; }
+.footer__logo img { width: 84px; height: auto; }
+.footer__nav { display: grid; gap: 6px; font-size: 0.9375rem; font-weight: 600; }
 .footer__nav a:hover, .footer__contacts a:hover { text-decoration: underline; text-underline-offset: 4px; }
-.footer__contacts { display: grid; gap: 10px; opacity: 0.85; }
+.footer__contacts { display: grid; gap: 6px; font-size: 0.9375rem; opacity: 0.85; }
 .footer__bottom {
   display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  margin-top: clamp(40px, 5vw, 56px); padding-top: 20px;
+  margin-top: clamp(24px, 3vw, 32px); padding-top: 16px;
   border-top: 1px solid rgba(233, 219, 198, 0.2);
   font-size: 0.8125rem;
 }
 .footer__bottom p { opacity: 0.75; }
 .footer__up { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
-.has-cart .footer { padding-bottom: 112px; }
+.has-cart .footer { padding-bottom: 104px; }
 
 /* ---------- страница полного меню ---------- */
 .menu-hero { padding: clamp(32px, 5vw, 56px) 0 clamp(28px, 4vw, 40px); }
@@ -650,11 +666,12 @@ fieldset { border: 0; min-width: 0; }
 .order-type__body {
   position: relative; display: flex; flex-direction: column; gap: 2px; height: 100%; min-height: 64px;
   padding: 12px 12px 12px 40px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface);
-  transition: border-color 0.2s, background-color 0.2s;
+  transition: border-color 0.25s, background-color 0.25s, transform 0.2s;
 }
+.order-type:active .order-type__body { transform: scale(0.98); }
 .order-type__body::before {
   content: ""; position: absolute; left: 14px; top: 15px; width: 16px; height: 16px; border-radius: 50%;
-  border: 1.5px solid var(--ink-soft); background: var(--surface); transition: background-color 0.2s, border-color 0.2s;
+  border: 1.5px solid var(--ink-soft); background: var(--surface); transition: background-color 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 .order-type b { font-size: 0.9375rem; line-height: 1.3; }
 .order-type small { font-size: 0.75rem; line-height: 1.4; color: var(--ink-soft); }
@@ -664,6 +681,19 @@ fieldset { border: 0; min-width: 0; }
   border-color: var(--terra); background: var(--terra); box-shadow: inset 0 0 0 3px var(--surface);
 }
 .order-type input:focus-visible + .order-type__body { outline: 2px solid var(--terra); outline-offset: 2px; }
+
+/* поле «время / адрес» раскрывается по высоте, а не появляется рывком */
+.collapse {
+  display: grid; grid-template-rows: 0fr; opacity: 0; visibility: hidden;
+  transition: grid-template-rows 0.4s cubic-bezier(0.3, 0.8, 0.3, 1), opacity 0.25s ease, visibility 0s linear 0.4s;
+}
+.collapse.is-open {
+  grid-template-rows: 1fr; opacity: 1; visibility: visible;
+  transition: grid-template-rows 0.4s cubic-bezier(0.3, 0.8, 0.3, 1), opacity 0.35s ease 0.08s, visibility 0s;
+}
+.collapse { margin: 0 -4px; } /* запас по бокам под обводку фокуса */
+.collapse__inner { min-height: 0; overflow: hidden; }
+.collapse__inner > .field { padding: 0 4px 14px; } /* отступ внутри: сам блок схлопывается до 0 */
 
 .field + .field { margin-top: 14px; }
 .field__label { display: block; margin-bottom: 6px; font-size: 0.875rem; font-weight: 600; }
@@ -748,8 +778,9 @@ fieldset { border: 0; min-width: 0; }
   .contacts__cta .btn { flex: 1 1 auto; }
   .info-row { padding: 16px 0; }
 
-  .footer__inner { grid-template-columns: 1fr; gap: 28px; }
-  .footer__logo img { width: 96px; }
+  .footer__inner { grid-template-columns: 1fr; gap: 20px; }
+  .footer__logo img { width: 72px; }
+  .footer__nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
   .footer__bottom { flex-direction: column; align-items: flex-start; }
 
   .cart-bar { bottom: 12px; }

@@ -66,10 +66,61 @@ window.RumaUI = (function () {
     return many;
   }
 
+  /* ---------- плавная смена содержимого (вкладки меню) ---------- */
+  // старое содержимое уходит в сторону и гаснет, новое выезжает с другой стороны.
+  // dir > 0 — движемся «вперёд» (влево), dir < 0 — «назад». Быстрые клики не копятся:
+  // остаётся только последний.
+  var swapBusy = false, swapQueued = null;
+
+  function swapContent(els, dir, render) {
+    var list = Array.isArray(els) ? els : [els];
+    var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (calm || !list[0].animate) { render(); return; }
+    if (swapBusy) { swapQueued = { els: list, dir: dir, render: render }; return; }
+    swapBusy = true;
+
+    var shift = (dir >= 0 ? -1 : 1) * 24;
+    var leaving = list.map(function (el) {
+      return el.animate(
+        [{ opacity: 1, transform: "translateX(0)" }, { opacity: 0, transform: "translateX(" + shift + "px)" }],
+        { duration: 150, easing: "ease-in", fill: "forwards" });
+    });
+
+    Promise.all(leaving.map(function (a) { return a.finished; })).then(function () {
+      render();
+      var entering = list.map(function (el) {
+        return el.animate(
+          [{ opacity: 0, transform: "translateX(" + (-shift) + "px)" }, { opacity: 1, transform: "translateX(0)" }],
+          { duration: 320, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
+      });
+      leaving.forEach(function (a) { a.cancel(); });
+      return Promise.all(entering.map(function (a) { return a.finished; }));
+    }).catch(function () { /* анимацию прервали — содержимое уже на месте */ }).then(function () {
+      swapBusy = false;
+      if (swapQueued) {
+        var q = swapQueued; swapQueued = null;
+        swapContent(q.els, q.dir, q.render);
+      }
+    });
+  }
+
   /* ---------- вкладки (с управлением стрелками, как в ARIA-паттерне) ---------- */
+  // активная вкладка подсвечивается «бегунком», который скользит между пунктами
   function setupTabs(root, onChange) {
     var tabs = Array.prototype.slice.call(root.querySelectorAll(".tab"));
     var current = tabs[0].dataset.tab;
+
+    function placeThumb() {
+      var active = root.querySelector(".tab.is-active");
+      if (!active || !active.offsetWidth) return;
+      root.style.setProperty("--thumb-x", active.offsetLeft + "px");
+      root.style.setProperty("--thumb-w", active.offsetWidth + "px");
+      if (!root.classList.contains("has-thumb")) {
+        root.classList.add("has-thumb");
+        // анимацию включаем только после первой расстановки — чтобы бегунок не «ехал» при загрузке
+        requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.add("thumb-anim"); }); });
+      }
+    }
 
     function select(key, focus) {
       current = key;
@@ -80,6 +131,7 @@ window.RumaUI = (function () {
         t.tabIndex = on ? 0 : -1;
         if (on && focus) t.focus({ preventScroll: true });
       });
+      placeThumb();
       onChange(key);
     }
 
@@ -92,6 +144,10 @@ window.RumaUI = (function () {
         select(tabs[(next + tabs.length) % tabs.length].dataset.tab, true);
       });
     });
+
+    placeThumb();
+    window.addEventListener("resize", placeThumb);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeThumb); // шрифт меняет ширину кнопок
 
     return {
       select: select,
@@ -197,6 +253,6 @@ window.RumaUI = (function () {
 
   return {
     esc: esc, pad: pad, plural: plural, getVariants: getVariants, itemRow: itemRow,
-    setupTabs: setupTabs, isOpenNow: isOpenNow, hours: HOURS, init: init,
+    setupTabs: setupTabs, swapContent: swapContent, isOpenNow: isOpenNow, hours: HOURS, init: init,
   };
 })();

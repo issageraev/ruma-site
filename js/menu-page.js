@@ -11,7 +11,6 @@
   var order = ["drinks", "food"];
 
   function render(group) {
-    currentGroup = group;
     var cats = MENU[group];
     panel.innerHTML = cats.map(function (cat, ci) {
       return '<section class="cat" id="cat-' + group + "-" + ci + '" aria-labelledby="cat-title-' + group + "-" + ci + '">' +
@@ -62,12 +61,15 @@
   });
 
   var tabs = RumaUI.setupTabs(tabsRoot, function (key) {
-    var changed = key !== currentGroup;
-    render(key);
-    if (changed) { // новая вкладка — читаем с начала списка
+    if (key === currentGroup) return;
+    var dir = order.indexOf(key) - order.indexOf(currentGroup);
+    currentGroup = key;
+    // список и чипсы плавно сменяются, а новая вкладка читается с начала списка
+    RumaUI.swapContent([panel, chips], dir, function () {
+      render(key);
       var top = panel.getBoundingClientRect().top + window.scrollY - document.getElementById("menubar").offsetHeight - document.querySelector(".topbar").offsetHeight - 8;
       if (window.scrollY > top) window.scrollTo({ top: top, behavior: "auto" });
-    }
+    });
   });
 
   // свайп влево/вправо переключает вкладки и здесь
@@ -88,6 +90,11 @@
 
   // ссылка вида menu.html#food открывает нужную вкладку сразу
   var wanted = location.hash.slice(1);
-  if (order.indexOf(wanted) !== -1) tabs.select(wanted);
-  else render("drinks");
+  if (order.indexOf(wanted) !== -1) {
+    currentGroup = wanted;
+    render(wanted);
+    tabs.select(wanted); // только подсветка вкладки: содержимое уже показано
+  } else {
+    render("drinks");
+  }
 })();

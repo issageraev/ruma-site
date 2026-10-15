@@ -12,8 +12,7 @@
   function featuredRank(item) { return typeof item.featured === "number" ? item.featured : 999; }
 
   // в подборку попадают позиции с полем featured (см. js/menu.js), по его порядку
-  function render(group, direction) {
-    currentGroup = group;
+  function render(group) {
     var rows = [];
     MENU[group].forEach(function (cat, ci) {
       cat.items.forEach(function (item, ii) {
@@ -26,11 +25,6 @@
       return RumaUI.itemRow(group, r.ci, r.ii, r.item, r.cat, { number: RumaUI.pad(i + 1), category: true });
     }).join("") + "</ul>";
 
-    if (direction) { // короткая анимация в сторону свайпа
-      panel.classList.remove("slide-next", "slide-prev");
-      void panel.offsetWidth; // перезапуск анимации
-      panel.classList.add(direction > 0 ? "slide-next" : "slide-prev");
-    }
     document.getElementById("full-menu-link").href = "menu.html#" + group; // ведёт на ту же вкладку
     RumaCart.refresh();
   }
@@ -38,7 +32,8 @@
   var order = ["drinks", "food"];
   var tabs = RumaUI.setupTabs(tabsRoot, function (key) {
     var dir = order.indexOf(key) - order.indexOf(currentGroup);
-    render(key, dir);
+    currentGroup = key;
+    RumaUI.swapContent(panel, dir, function () { render(key); });
   });
 
   // свайп по списку: влево — следующая вкладка, вправо — предыдущая
