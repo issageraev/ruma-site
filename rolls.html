@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Роллы — RUMA, Новый Хушет</title>
+  <meta name="description" content="Роллы кофейни RUMA в Новом Хушете: Калифорния, Филадельфия, Цезарь, Шик и фирменный ролл Рума. Фото, состав, вес и цена. Можно собрать заказ и отправить в WhatsApp.">
+  <meta name="theme-color" content="#F5E9D9">
+  <link rel="canonical" href="https://issageraev.github.io/ruma-site/rolls.html">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="Роллы RUMA — фото, состав и цены">
+  <meta property="og:url" content="https://issageraev.github.io/ruma-site/rolls.html">
+  <meta property="og:image" content="https://issageraev.github.io/ruma-site/img/og.jpg">
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=202610172104">
+</head>
+<body class="page-menu page-rolls" id="top">
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a href="index.html" class="topbar__logo" aria-label="RUMA — на главную">
+        <img src="img/logo-wordmark.png" alt="RUMA" width="480" height="121">
+      </a>
+      <nav class="topbar__nav" id="site-nav" aria-label="Основная навигация">
+        <a href="index.html#menu">Меню</a>
+        <a href="rolls.html" aria-current="page">Роллы</a>
+        <a href="index.html#about">О нас</a>
+        <a href="index.html#contacts">Контакты</a>
+      </nav>
+      <a class="topbar__order" id="header-order" href="#main">
+        <span>Заказать</span>
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="topbar__count" id="header-count" hidden></span>
+      </a>
+      <button class="topbar__burger" id="burger" type="button" aria-label="Открыть навигацию" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="menu-hero">
+      <div class="container">
+        <a class="link-arrow link-arrow--back" href="index.html">
+          <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          На главную
+        </a>
+        <h1 class="display">Роллы</h1>
+        <p class="menu-hero__sub">Нажмите на фото — увидите блюдо крупнее, состав и вес. Кнопка «+» добавляет ролл в заказ, он уйдёт к нам в WhatsApp готовым сообщением.</p>
+        <a class="link-arrow menu-hero__more" href="menu.html">
+          Кофе, завтраки и кухня
+          <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <div class="container rolls-page">
+      <div class="rolls-grid" data-rolls="all">
+        <!-- карточки рендерятся из js/menu.js (MENU.rolls) -->
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <a class="footer__logo" href="index.html" aria-label="RUMA — на главную">
+        <img src="img/logo-cream-full.png" alt="RUMA — источник кофе" width="480" height="420" loading="lazy">
+      </a>
+      <nav class="footer__nav" aria-label="Навигация в подвале">
+        <a href="index.html">Главная</a>
+        <a href="menu.html">Полное меню</a>
+        <a href="index.html#about">О нас</a>
+        <a href="index.html#contacts">Контакты</a>
+      </nav>
+      <div class="footer__contacts">
+        <p>Новый Хушет, ул.&nbsp;Садовая,&nbsp;62</p>
+        <p>Ежедневно 07:30–23:00</p>
+        <p><a href="tel:+79064501429">+7 906 450-14-29</a></p>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© <span id="year">2026</span> RUMA — источник кофе</p>
+      <a class="footer__up" href="#top">Наверх <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14V3M4 7l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </footer>
+
+  <script src="js/menu.js?v=202610172104"></script>
+  <script src="js/ui.js?v=202610172104"></script>
+  <script src="js/cart.js?v=202610172104"></script>
+  <script src="js/rolls.js?v=202610172104"></script>
+  <script src="js/rolls-page.js?v=202610172104"></script>
+</body>
+</html>

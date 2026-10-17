@@ -51,7 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="img/hero.webp" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=202610151704">
+  <link rel="stylesheet" href="css/style.css?v=202610172104">
 </head>
 <body id="top">
   <a class="skip-link" href="#main">Перейти к содержимому</a>
@@ -71,6 +71,7 @@
       </a>
       <nav class="topbar__nav" id="site-nav" aria-label="Основная навигация">
         <a href="#menu">Меню</a>
+        <a href="#rolls">Роллы</a>
         <a href="#about">О нас</a>
         <a href="#contacts">Контакты</a>
       </nav>
@@ -154,6 +155,30 @@
             <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
           <p class="menu__swipe">Нажмите на кнопку, чтобы перейти в меню</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- РОЛЛЫ -->
+    <section class="section rolls" id="rolls">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-head__main">
+            <p class="eyebrow">Роллы RUMA</p>
+            <h2 class="display">Роллы</h2>
+          </div>
+          <p class="section-head__aside">Нажмите на фото, чтобы увидеть блюдо крупнее, состав и вес. Кнопка «+» добавляет ролл в заказ.</p>
+        </div>
+
+        <div class="rolls-grid rolls-grid--featured" data-rolls="featured">
+          <!-- карточки рендерятся из js/menu.js (MENU.rolls) -->
+        </div>
+
+        <div class="rolls__foot">
+          <a class="btn btn--outline" href="rolls.html">
+            Все роллы
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
       </div>
     </section>
@@ -275,6 +300,7 @@
       <nav class="footer__nav" aria-label="Навигация в подвале">
         <a href="#menu">Меню</a>
         <a href="menu.html">Полное меню</a>
+        <a href="rolls.html">Роллы</a>
         <a href="#about">О нас</a>
         <a href="#contacts">Контакты</a>
       </nav>
@@ -291,9 +317,10 @@
   </footer>
 
   <!-- корзина и окна заказа подставляет js/cart.js -->
-  <script src="js/menu.js?v=202610151704"></script>
-  <script src="js/ui.js?v=202610151704"></script>
-  <script src="js/cart.js?v=202610151704"></script>
-  <script src="js/main.js?v=202610151704"></script>
+  <script src="js/menu.js?v=202610172104"></script>
+  <script src="js/ui.js?v=202610172104"></script>
+  <script src="js/cart.js?v=202610172104"></script>
+  <script src="js/rolls.js?v=202610172104"></script>
+  <script src="js/main.js?v=202610172104"></script>
 </body>
 </html>
