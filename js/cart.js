@@ -279,10 +279,16 @@ window.RumaCart = (function () {
     el.querySelector(".dialog").focus();
   }
 
+  // все окна страницы: корзина, выбор объёма и окна, которые подключают другие скрипты (окно ролла)
+  var overlays = [sheet, picker];
+
+  function openOverlays() {
+    return overlays.filter(function (o) { return !o.hidden; });
+  }
+
   function closeAll() {
-    var wasOpen = !sheet.hidden || !picker.hidden;
-    sheet.hidden = true;
-    picker.hidden = true;
+    var wasOpen = openOverlays().length > 0;
+    overlays.forEach(function (o) { o.hidden = true; });
     document.body.classList.remove("no-scroll");
     resetClear();
     if (wasOpen && lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
@@ -303,7 +309,7 @@ window.RumaCart = (function () {
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { closeAll(); return; }
     if (e.key !== "Tab") return;
-    var open = !sheet.hidden ? sheet : !picker.hidden ? picker : null;
+    var open = openOverlays()[0];
     if (!open) return;
     var list = Array.prototype.filter.call(
       open.querySelectorAll("button:not([disabled]), a[href], input:not([type=radio]), input[type=radio]:checked"),
@@ -317,8 +323,9 @@ window.RumaCart = (function () {
     }
   });
 
-  document.querySelectorAll("[data-close]").forEach(function (el) {
-    el.addEventListener("click", closeAll);
+  // крестик и затемнение закрывают любое окно (делегирование — окна могут появиться позже)
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("[data-close]")) closeAll();
   });
 
   /* ---------- выбор варианта (объём/размер) ---------- */
@@ -449,5 +456,13 @@ window.RumaCart = (function () {
   loadCart();
   update();
 
-  return { add: add, count: count, openSheet: openSheet, refresh: updateBadges, buildMessage: buildMessage };
+  // регистрация окна, созданного другим скриптом: даёт ему Escape, ловушку фокуса и блокировку прокрутки
+  function registerOverlay(el) {
+    if (overlays.indexOf(el) === -1) overlays.push(el);
+  }
+
+  return {
+    add: add, count: count, openSheet: openSheet, refresh: updateBadges, buildMessage: buildMessage,
+    openOverlay: openOverlay, closeAll: closeAll, registerOverlay: registerOverlay,
+  };
 })();
