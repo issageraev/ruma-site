@@ -35,6 +35,7 @@
 * { margin: 0; padding: 0; }
 
 html {
+  touch-action: manipulation; /* двойное касание не увеличивает страницу; прокрутка и щипок браузера остаются */
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-h) + 8px);
   -webkit-text-size-adjust: 100%;
@@ -49,6 +50,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body { touch-action: manipulation; }
 body.no-scroll { overflow: hidden; }
 
 img { display: block; max-width: 100%; height: auto; }
@@ -283,7 +285,7 @@ fieldset { border: 0; min-width: 0; }
   background: var(--terra);
   box-shadow: 0 30px 60px -30px rgba(43, 29, 23, 0.45);
 }
-.arch img { width: 100%; height: 100%; object-fit: cover; object-position: 22% 50%; }
+.arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
 
 .stamp {
   position: absolute; top: 4%; left: -8%;
@@ -534,11 +536,16 @@ fieldset { border: 0; min-width: 0; }
   font-family: var(--font-display); font-weight: 400; font-size: clamp(1.7rem, 3vw, 2.4rem);
   line-height: 1.2; color: var(--terra); padding-bottom: 4px;
 }
+.cat__sub {
+  display: flex; align-items: baseline; gap: 8px; margin-top: clamp(24px, 3vw, 36px); padding-bottom: 2px;
+  font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--terra);
+}
+.cat__sub .cat__note { margin-left: 0; font-size: 0.875rem; font-weight: 500; letter-spacing: 0; text-transform: none; }
 .cat__note { font-family: var(--font-body); font-size: 0.9375rem; color: var(--ink-menu); margin-left: 8px; }
 
 /* ---------- плашка корзины ---------- */
 .cart-bar {
-  position: fixed; left: 50%; bottom: 20px; z-index: 60;
+  position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 60;
   width: min(460px, calc(100% - 24px));
   transform: translateX(-50%);
   animation: bar-in 0.3s ease-out;
@@ -849,7 +856,7 @@ button.order-submit { width: 100%; border: 0; font-family: inherit; cursor: poin
   .footer__nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
   .footer__bottom { flex-direction: column; align-items: flex-start; }
 
-  .cart-bar { bottom: 12px; }
+  .cart-bar { bottom: calc(12px + env(safe-area-inset-bottom)); }
   .cart-bar__cta { padding: 12px 14px; }
 }
 

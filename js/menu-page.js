@@ -10,19 +10,42 @@
   var currentGroup = "drinks";
   var order = ["drinks", "food"];
 
+  // категории с одинаковым group (или без него — по своему названию) собираются в один раздел
+  function groupsOf(cats) {
+    var groups = [], byTitle = {};
+    cats.forEach(function (cat, ci) {
+      var title = cat.group || cat.title;
+      if (!byTitle[title]) { byTitle[title] = { title: title, parts: [] }; groups.push(byTitle[title]); }
+      byTitle[title].parts.push({ cat: cat, ci: ci });
+    });
+    return groups;
+  }
+
   function render(group) {
-    var cats = MENU[group];
-    panel.innerHTML = cats.map(function (cat, ci) {
-      return '<section class="cat" id="cat-' + group + "-" + ci + '" aria-labelledby="cat-title-' + group + "-" + ci + '">' +
-        '<h2 class="cat__title" id="cat-title-' + group + "-" + ci + '">' + RumaUI.esc(cat.title) +
-          (cat.note ? ' <span class="cat__note">' + RumaUI.esc(cat.note) + "</span>" : "") + "</h2>" +
-        '<ul class="items">' +
-          cat.items.map(function (item, ii) { return RumaUI.itemRow(group, ci, ii, item, cat); }).join("") +
-        "</ul></section>";
+    var groups = groupsOf(MENU[group]);
+
+    panel.innerHTML = groups.map(function (g, gi) {
+      var id = "cat-" + group + "-" + gi;
+      var lead = g.parts[0].cat;
+      var note = lead.title === g.title && lead.note ? lead.note : "";
+      return '<section class="cat" id="' + id + '" aria-labelledby="' + id + '-title">' +
+        '<h2 class="cat__title" id="' + id + '-title">' + RumaUI.esc(g.title) +
+          (note ? ' <span class="cat__note">' + RumaUI.esc(note) + "</span>" : "") + "</h2>" +
+        g.parts.map(function (part) {
+          // подзаголовок нужен, когда в разделе несколько категорий (кроме первой — она и дала название)
+          var sub = part.cat.title !== g.title
+            ? '<h3 class="cat__sub">' + RumaUI.esc(part.cat.title) +
+                (part.cat.note ? ' <span class="cat__note">' + RumaUI.esc(part.cat.note) + "</span>" : "") + "</h3>"
+            : "";
+          return sub + '<ul class="items">' +
+            part.cat.items.map(function (item, ii) { return RumaUI.itemRow(group, part.ci, ii, item, part.cat); }).join("") +
+            "</ul>";
+        }).join("") +
+      "</section>";
     }).join("");
 
-    chips.innerHTML = cats.map(function (cat, ci) {
-      return '<a class="chip' + (ci === 0 ? ' is-active' : '') + '" href="#cat-' + group + "-" + ci + '">' + RumaUI.esc(cat.title) + "</a>";
+    chips.innerHTML = groups.map(function (g, gi) {
+      return '<a class="chip' + (gi === 0 ? ' is-active' : '') + '" href="#cat-' + group + "-" + gi + '">' + RumaUI.esc(g.title) + "</a>";
     }).join("");
 
     RumaCart.refresh();
