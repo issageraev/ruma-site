@@ -69,7 +69,7 @@ window.RumaRolls = (function () {
       '<div class="sheet__body">' +
         '<div class="gallery" id="roll-gallery" role="group" aria-label="Фото блюда"></div>' +
         '<div class="gallery__dots" id="roll-dots" aria-hidden="true"><i class="is-on"></i><i></i></div>' +
-        '<h4 class="roll-comp__label">Состав и вес</h4>' +
+        '<h4 class="roll-comp__label">Состав</h4>' +
         '<p class="roll-comp" id="roll-comp"></p>' +
       "</div>" +
       '<footer class="sheet__foot">' +
@@ -95,7 +95,7 @@ window.RumaRolls = (function () {
 
     document.getElementById("roll-title").textContent = item.name;
     document.getElementById("roll-price").textContent = money(variant.price);
-    document.getElementById("roll-comp").textContent = item.comp;
+    document.getElementById("roll-comp").textContent = item.desc; // то же описание, что на карточке
     gallery.innerHTML =
       '<img src="' + photo(item) + '" alt="' + esc(item.name) + '" width="1000" height="1250">' +
       '<img src="' + photo(item, true) + '" alt="' + esc(item.name) + ' — крупным планом" width="1000" height="1250">';
