@@ -13,10 +13,18 @@ window.RumaCart = (function () {
     { value: "На месте", hint: "в зале RUMA", extra: null },
     { value: "Заберу заказ", hint: "приготовим к времени",
       extra: { label: "К какому времени подготовить?", placeholder: "например, к 14:30" } },
-    { value: "Отправить на такси", hint: "передадим с такси",
+    { value: "Отправить на такси", hint: "передадим с такси", pay: true,
       extra: { label: "Адрес для такси", placeholder: "улица, дом", required: true,
         error: "Укажите адрес — без него такси не отправить" } },
   ];
+
+  // способ оплаты — спрашиваем только при отправке на такси
+  var PAYMENT_OPTIONS = ["Наличными таксисту", "Банковской картой"];
+  var PAYMENT_ERROR = "Выберите, как будете платить";
+
+  // ожидание подтверждения отправки: заказ чистим только после ответа «Да, отправил»
+  var PENDING_KEY = "ruma_order_pending";
+  var PENDING_TTL = 12 * 60 * 60 * 1000; // через 12 часов забываем
 
   function typeByValue(v) {
     return ORDER_TYPES.filter(function (t) { return t.value === v; })[0] || null;
@@ -88,6 +96,22 @@ window.RumaCart = (function () {
                 "</div>" +
               "</div>" +
             "</div>" +
+            '<div class="collapse" id="order-pay" inert>' +
+              '<div class="collapse__inner">' +
+                '<div class="field">' +
+                  '<p class="field__label" id="order-pay-label">Как будете платить?</p>' +
+                  '<div class="order-types order-types--pay" role="radiogroup" aria-labelledby="order-pay-label" aria-describedby="order-pay-error">' +
+                    PAYMENT_OPTIONS.map(function (o) {
+                      return '<label class="order-type">' +
+                        '<input type="radio" name="order-pay" value="' + o + '">' +
+                        '<span class="order-type__body"><b>' + o + "</b></span>" +
+                      "</label>";
+                    }).join("") +
+                  "</div>" +
+                  '<p class="field__error" id="order-pay-error" hidden></p>' +
+                "</div>" +
+              "</div>" +
+            "</div>" +
             '<div class="field">' +
               '<label class="field__label" for="order-comment">Комментарий <span class="field__opt">— необязательно</span></label>' +
               '<input class="field__input" id="order-comment" type="text" maxlength="200" placeholder="пожелания, аллергии, «без сахара»…">' +
@@ -100,8 +124,20 @@ window.RumaCart = (function () {
           '<a class="order-submit" id="order-btn" href="#" target="_blank" rel="noopener">' + ICON_WA + "Отправить заказ в WhatsApp</a>" +
           '<p class="order-hint">Откроется WhatsApp с готовым текстом — останется нажать «Отправить»</p>' +
         "</footer>" +
+
+        // экран после ухода в WhatsApp: сайт не видит, нажали ли «Отправить», поэтому спрашиваем
+        '<div class="sheet__confirm" id="order-confirm" hidden>' +
+          '<span class="sheet__confirm-icon" aria-hidden="true">' + ICON_WA + "</span>" +
+          '<h3 class="dialog__title" id="confirm-title">Заказ отправили в WhatsApp?</h3>' +
+          '<p class="sheet__confirm-text">Заказ дойдёт до нас, когда в WhatsApp нажмёте «Отправить». Если уже нажали — подтвердите, и мы очистим заказ на сайте.</p>' +
+          '<button class="order-submit" id="confirm-yes" type="button">Да, отправил — очистить заказ</button>' +
+          '<button class="sheet__confirm-alt" id="confirm-no" type="button">Нет, вернуться к заказу</button>' +
+          '<a class="sheet__confirm-link" id="confirm-again" href="#" target="_blank" rel="noopener">Открыть WhatsApp ещё раз</a>' +
+        "</div>" +
       "</div>" +
-    "</div>");
+    "</div>" +
+
+    '<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>');
 
   var cartBar = document.getElementById("cart-bar");
   var cartBarInfo = document.getElementById("cart-bar-info");
@@ -114,7 +150,13 @@ window.RumaCart = (function () {
   var extraWrap = document.getElementById("order-extra");
   var extraInput = document.getElementById("order-extra-input");
   var extraError = document.getElementById("order-extra-error");
+  var payWrap = document.getElementById("order-pay");
+  var payError = document.getElementById("order-pay-error");
   var commentInput = document.getElementById("order-comment");
+  var sheetDialog = sheet.querySelector(".dialog");
+  var confirmView = document.getElementById("order-confirm");
+  var confirmAgain = document.getElementById("confirm-again");
+  var toast = document.getElementById("toast");
   var clearBtn = document.getElementById("cart-clear");
   var orderBtn = document.getElementById("order-btn");
   var picker = document.getElementById("variant-picker");
@@ -126,10 +168,14 @@ window.RumaCart = (function () {
   // cart: { key: {name, variant, price, qty} }
   var cart = {};
   var orderType = ORDER_TYPES[0].value;
+  var payment = ""; // способ оплаты (только для такси)
 
   function saveCart() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cart: cart, orderType: orderType }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        cart: cart, orderType: orderType, payment: payment,
+        draft: { extra: extraInput.value, comment: commentInput.value }, // поля не пропадают при перезагрузке
+      }));
     } catch (e) { /* приватный режим — работаем без сохранения */ }
   }
 
@@ -146,6 +192,11 @@ window.RumaCart = (function () {
         });
       }
       if (data && typeByValue(data.orderType)) orderType = data.orderType;
+      if (data && PAYMENT_OPTIONS.indexOf(data.payment) !== -1) payment = data.payment;
+      if (data && data.draft) {
+        if (typeof data.draft.extra === "string") extraInput.value = data.draft.extra.slice(0, 120);
+        if (typeof data.draft.comment === "string") commentInput.value = data.draft.comment.slice(0, 200);
+      }
     } catch (e) { /* повреждённые данные — начинаем с пустой корзины */ }
   }
 
@@ -259,7 +310,20 @@ window.RumaCart = (function () {
     extraWrap.classList.toggle("is-open", !!extra);
     if (extra) extraWrap.removeAttribute("inert"); // свёрнутое поле не должно ловить Tab
     else extraWrap.setAttribute("inert", "");
+
+    var needsPay = !!typeByValue(orderType).pay;
+    document.querySelectorAll('input[name="order-pay"]').forEach(function (r) { r.checked = r.value === payment; });
+    payWrap.classList.toggle("is-open", needsPay);
+    if (needsPay) payWrap.removeAttribute("inert");
+    else payWrap.setAttribute("inert", "");
+
     setError("");
+    setPayError("");
+  }
+
+  function setPayError(text) {
+    payError.textContent = text;
+    payError.hidden = !text;
   }
 
   function setError(text) {
@@ -288,6 +352,11 @@ window.RumaCart = (function () {
 
   function closeAll() {
     var wasOpen = openOverlays().length > 0;
+    if (!sheet.hidden && sheetDialog.classList.contains("is-confirm")) {
+      // окно закрыли, не ответив: заказ остаётся в корзине, вопрос больше не показываем
+      clearPending();
+      showConfirm(false);
+    }
     overlays.forEach(function (o) { o.hidden = true; });
     document.body.classList.remove("no-scroll");
     resetClear();
@@ -401,7 +470,16 @@ window.RumaCart = (function () {
     });
   });
 
-  extraInput.addEventListener("input", function () { if (extraInput.value.trim()) setError(""); });
+  extraInput.addEventListener("input", function () { if (extraInput.value.trim()) setError(""); saveCart(); });
+  commentInput.addEventListener("input", saveCart);
+
+  document.querySelectorAll('input[name="order-pay"]').forEach(function (r) {
+    r.addEventListener("change", function () {
+      payment = r.value;
+      saveCart();
+      setPayError("");
+    });
+  });
 
   document.getElementById("cart-bar-open").addEventListener("click", openSheet);
 
@@ -429,32 +507,114 @@ window.RumaCart = (function () {
       var val = extraInput.value.trim();
       lines.push(extra.label.replace(/\?$/, "") + ": " + (val || "(уточню в чате)"));
     }
+    if (typeByValue(orderType).pay && payment) lines.push("Оплата: " + payment);
     var comment = commentInput.value.trim();
     if (comment) lines.push("Комментарий: " + comment);
     return lines.join("\n");
   }
 
+  /* ---------- отправка и очистка заказа ----------
+     Сайт не может узнать, нажал ли гость «Отправить» в WhatsApp (ссылка лишь открывает чат с текстом).
+     Поэтому после перехода в WhatsApp показываем вопрос, и корзину чистим только по ответу «Да, отправил».
+     Вопрос переживает перезагрузку страницы (в приложении iPhone страница может выгрузиться, пока открыт WhatsApp). */
+  function setPending(href) {
+    try { localStorage.setItem(PENDING_KEY, JSON.stringify({ ts: Date.now(), href: href })); } catch (e) { /* без сохранения */ }
+  }
+
+  function readPending() {
+    try {
+      var p = JSON.parse(localStorage.getItem(PENDING_KEY) || "null");
+      if (p && typeof p.href === "string" && Date.now() - p.ts < PENDING_TTL) return p;
+    } catch (e) { /* повреждённые данные */ }
+    return null;
+  }
+
+  function clearPending() {
+    try { localStorage.removeItem(PENDING_KEY); } catch (e) { /* без сохранения */ }
+  }
+
+  function showConfirm(on, href) {
+    sheetDialog.classList.toggle("is-confirm", on);
+    confirmView.hidden = !on;
+    sheetDialog.setAttribute("aria-labelledby", on ? "confirm-title" : "cart-title");
+    if (on) {
+      confirmAgain.href = href || "#";
+      document.getElementById("confirm-yes").focus();
+    }
+  }
+
+  function showToast(text) {
+    toast.textContent = text;
+    toast.hidden = false;
+    toast.classList.remove("is-in");
+    void toast.offsetWidth;
+    toast.classList.add("is-in");
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(function () { toast.hidden = true; toast.classList.remove("is-in"); }, 5000);
+  }
+
+  // заказ ушёл: чистим корзину, поля, оплату и выходим из окна
+  function completeOrder() {
+    clearPending();
+    cart = {};
+    payment = "";
+    orderType = ORDER_TYPES[0].value; // новый заказ начинается с обычного формата, а не с «такси»
+    extraInput.value = "";
+    commentInput.value = "";
+    saveCart();
+    showConfirm(false);
+    closeAll();
+    update();
+    showToast("Спасибо! Заказ отправлен — ждём вас в RUMA.");
+  }
+
   orderBtn.addEventListener("click", function (e) {
     if (count() === 0) { e.preventDefault(); return; }
-    var extra = typeByValue(orderType).extra;
+    var type = typeByValue(orderType);
+    var extra = type.extra;
     if (extra && extra.required && !extraInput.value.trim()) {
       e.preventDefault();
       setError(extra.error);
       extraInput.focus();
       return;
     }
-    orderBtn.href = "https://wa.me/" + WHATSAPP_PHONE + "?text=" + encodeURIComponent(buildMessage());
-    // после ухода в WhatsApp очищаем поля и закрываем окно,
-    // чтобы по возвращении на сайт не оставались старые адрес/время/комментарий
-    setTimeout(function () {
-      extraInput.value = "";
-      commentInput.value = "";
-      closeAll();
-    }, 400);
+    if (type.pay && !payment) {
+      e.preventDefault();
+      setPayError(PAYMENT_ERROR);
+      var firstPay = payWrap.querySelector("input");
+      if (firstPay) firstPay.focus();
+      return;
+    }
+    var href = "https://wa.me/" + WHATSAPP_PHONE + "?text=" + encodeURIComponent(buildMessage());
+    orderBtn.href = href;
+    setPending(href);
+    // ссылка откроется сама (это действие по умолчанию); окно переключаем уже после неё
+    setTimeout(function () { showConfirm(true, href); }, 60);
+  });
+
+  document.getElementById("confirm-yes").addEventListener("click", completeOrder);
+
+  document.getElementById("confirm-no").addEventListener("click", function () {
+    clearPending();
+    showConfirm(false);
+    orderBtn.focus();
+  });
+
+  confirmAgain.addEventListener("click", function () {
+    // WhatsApp откроется ещё раз; вопрос остаётся на экране
+    setTimeout(function () { document.getElementById("confirm-yes").focus(); }, 60);
   });
 
   loadCart();
   update();
+
+  (function restorePending() {
+    var pending = readPending();
+    if (!pending) { clearPending(); return; }
+    if (count() === 0) { clearPending(); return; }
+    openSheet();
+    showConfirm(true, pending.href);
+  })();
 
   // регистрация окна, созданного другим скриптом: даёт ему Escape, ловушку фокуса и блокировку прокрутки
   function registerOverlay(el) {

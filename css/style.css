@@ -28,6 +28,7 @@
   --section-y: clamp(72px, 10vw, 128px);
   --radius: 20px;
   --header-h: 72px;
+  --tabbar-h: 64px;         /* высота нижней панели на телефоне */
   --anchor-gap: clamp(32px, 5vw, 64px); /* расстояние от шапки до подписи секции после перехода по ссылке */
 }
 
@@ -219,17 +220,6 @@ fieldset { border: 0; min-width: 0; }
   border-radius: 11px; background: var(--terra); color: var(--cream); font-size: 0.75rem;
 }
 
-.topbar__burger {
-  display: none; width: 44px; height: 44px; border: 0; background: none; position: relative;
-}
-.topbar__burger span {
-  position: absolute; left: 11px; right: 11px; height: 2px; background: var(--ink); border-radius: 1px;
-  transition: transform 0.25s, top 0.25s;
-}
-.topbar__burger span:first-child { top: 18px; }
-.topbar__burger span:last-child { top: 25px; }
-.nav-open .topbar__burger span:first-child { top: 21px; transform: rotate(45deg); }
-.nav-open .topbar__burger span:last-child { top: 21px; transform: rotate(-45deg); }
 
 /* ---------- главный экран ---------- */
 .hero { padding: clamp(40px, 6vw, 80px) 0 clamp(24px, 4vw, 48px); }
@@ -792,6 +782,96 @@ button.order-submit { width: 100%; border: 0; font-family: inherit; cursor: poin
 .topbar__nav a[aria-current="page"]::after { transform: scaleX(1); }
 .menu-hero__more { margin-top: 20px; }
 
+/* ---------- нижняя панель навигации (только телефон): Liquid Glass ---------- */
+.tabbar {
+  position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 70;
+  display: none; pointer-events: none;
+}
+.tabbar__glass {
+  --thumb-x: 0px; --thumb-w: 0px;
+  position: relative; display: flex; max-width: 460px; margin: 0 auto; padding: 6px; pointer-events: auto;
+  border-radius: 32px;
+  /* «стекло»: полупрозрачная заливка, сильное размытие того, что под панелью, и подсветка цветов */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 250, 242, 0.30) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%) brightness(1.05);
+  backdrop-filter: blur(24px) saturate(190%) brightness(1.05);
+  /* тень, верхний блик, тонкая светлая кромка */
+  box-shadow:
+    0 14px 32px -10px rgba(43, 29, 23, 0.34),
+    0 2px 6px rgba(43, 29, 23, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.30),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.38);
+}
+.tabbar__glass::before { /* блик по верхней кромке */
+  content: ""; position: absolute; inset: 1px 14px auto; height: 42%; border-radius: 26px 26px 60% 60%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+  opacity: 0.55; pointer-events: none;
+}
+/* «капля» стекла под выбранным пунктом — скользит между пунктами */
+.tabbar__thumb {
+  position: absolute; top: 6px; bottom: 6px; left: 0; width: var(--thumb-w);
+  border-radius: 26px; opacity: 0; transform: translateX(var(--thumb-x));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.50));
+  box-shadow:
+    0 6px 16px -6px rgba(43, 29, 23, 0.30),
+    inset 0 1px 0 #fff,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.70),
+    inset 0 -6px 10px -6px rgba(128, 66, 40, 0.14);
+}
+.tabbar__glass.has-thumb .tabbar__thumb { opacity: 1; }
+.tabbar__glass.thumb-anim .tabbar__thumb {
+  transition: transform 0.55s cubic-bezier(0.34, 1.35, 0.5, 1), width 0.55s cubic-bezier(0.34, 1.35, 0.5, 1);
+}
+.tabbar__item {
+  position: relative; z-index: 1; flex: 1 1 0; min-width: 0; height: calc(var(--tabbar-h) - 12px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  border-radius: 26px; text-decoration: none; color: #5A463B;
+  font-size: 0.6875rem; font-weight: 600; line-height: 1;
+  transition: color 0.3s, transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tabbar__item svg { width: 22px; height: 22px; }
+.tabbar__item:active { transform: scale(0.93); }
+.tabbar__item.is-active { color: var(--terra); }
+.tabbar__item:focus-visible { outline: 2px solid var(--terra); outline-offset: -2px; }
+
+/* без поддержки размытия или при «уменьшить прозрачность» — плотная панель */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tabbar__glass { background: rgba(251, 244, 234, 0.97); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .tabbar__glass { background: rgba(251, 244, 234, 0.97); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* ---------- уведомление ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 24px; z-index: 90; width: max-content; max-width: calc(100% - 32px);
+  padding: 14px 20px; border-radius: 16px; background: var(--ink); color: var(--cream);
+  font-weight: 600; font-size: 0.9375rem; text-align: center;
+  box-shadow: 0 18px 40px -12px rgba(43, 29, 23, 0.55);
+  transform: translateX(-50%);
+}
+.toast.is-in { animation: toast-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 16px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* ---------- экран «Отправили заказ в WhatsApp?» ---------- */
+.sheet__confirm { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 40px 24px calc(28px + env(safe-area-inset-bottom)); text-align: center; }
+.dialog--cart.is-confirm > :not(.sheet__confirm):not(.dialog__handle) { display: none; }
+.dialog--cart.is-confirm > .sheet__confirm { display: flex; }
+.sheet__confirm-icon { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--terra-tint); color: var(--terra); }
+.sheet__confirm-icon .icon { width: 32px; height: 32px; }
+.sheet__confirm .dialog__title { margin: 4px 0 0; padding: 0; }
+.sheet__confirm-text { max-width: 28em; color: var(--ink-menu); line-height: 1.6; }
+.sheet__confirm .order-submit { margin-top: 12px; }
+.sheet__confirm-alt {
+  width: 100%; min-height: 52px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface);
+  font-weight: 700; transition: border-color 0.2s;
+}
+.sheet__confirm-alt:hover { border-color: var(--terra); }
+.sheet__confirm-link { padding: 8px; font-size: 0.875rem; color: var(--ink-soft); text-underline-offset: 3px; }
+@media (min-width: 640px) { .sheet__confirm { padding: 48px 36px 36px; } }
+
 /* ---------- плавное появление ---------- */
 .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .js .reveal.is-in { opacity: 1; transform: none; }
@@ -817,17 +897,8 @@ button.order-submit { width: 100%; border: 0; font-family: inherit; cursor: poin
   :root { --header-h: 64px; }
 
   .topbar__logo img { height: 22px; }
-  .topbar__burger { display: block; order: 3; margin-right: -10px; }
   .topbar__order { margin-left: auto; }
-  .topbar__nav {
-    position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; gap: 0;
-    padding: 8px var(--gutter) 16px; background: var(--bg); border-bottom: 1px solid var(--line);
-    visibility: hidden; opacity: 0; transform: translateY(-8px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
-  }
-  .nav-open .topbar__nav { visibility: visible; opacity: 1; transform: none; }
-  .topbar__nav a { padding: 14px 0; font-size: 1.05rem; border-bottom: 1px solid var(--line); }
-  .topbar__nav a:last-child { border-bottom: 0; }
-  .topbar__nav a::after { display: none; }
+  .topbar__nav { display: none; } /* на телефоне разделы — в нижней панели */
 
   .hero__actions .btn--primary { width: 100%; }
   .statusbar__addr, .statusbar__sep { display: none; }
@@ -856,12 +927,17 @@ button.order-submit { width: 100%; border: 0; font-family: inherit; cursor: poin
   .footer__nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
   .footer__bottom { flex-direction: column; align-items: flex-start; }
 
-  .cart-bar { bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .tabbar { display: block; }
+  .cart-bar { bottom: calc(var(--tabbar-h) + 24px + env(safe-area-inset-bottom)); }
+  .toast { bottom: calc(var(--tabbar-h) + 24px + env(safe-area-inset-bottom)); }
+  .footer { padding-bottom: calc(18px + var(--tabbar-h) + 28px + env(safe-area-inset-bottom)); }
+  .has-cart .footer { padding-bottom: calc(18px + var(--tabbar-h) + 28px + 72px + env(safe-area-inset-bottom)); }
   .cart-bar__cta { padding: 12px 14px; }
 }
 
 @media (max-width: 360px) {
   .order-types { grid-template-columns: 1fr; }
+  .tabbar__item { font-size: 0.625rem; }
   .cart-item { grid-template-columns: minmax(0, 1fr) auto; }
   .cart-item__sum { grid-column: 2; grid-row: 1; }
   .cart-item__qty { grid-column: 1 / -1; justify-self: start; }

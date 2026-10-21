@@ -158,27 +158,15 @@ window.RumaUI = (function () {
     };
   }
 
-  /* ---------- шапка: бургер на телефоне ---------- */
+  /* ---------- шапка ---------- */
   function setupHeader() {
     var header = document.querySelector(".topbar");
-    var burger = document.getElementById("burger");
-    if (!header || !burger) return;
-    function setOpen(open) {
-      header.classList.toggle("nav-open", open);
-      burger.setAttribute("aria-expanded", open ? "true" : "false");
-      burger.setAttribute("aria-label", open ? "Закрыть навигацию" : "Открыть навигацию");
-    }
-    burger.addEventListener("click", function () { setOpen(!header.classList.contains("nav-open")); });
-    header.querySelectorAll(".topbar__nav a").forEach(function (a) {
-      a.addEventListener("click", function () { setOpen(false); });
-    });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") setOpen(false); });
+    if (!header) return;
 
     // логотип и ссылки «наверх» на этой же странице — плавно к самому верху, без #top в адресе
     document.querySelectorAll('a[href="#top"]').forEach(function (a) {
       a.addEventListener("click", function (e) {
         e.preventDefault();
-        setOpen(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
         if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
       });
@@ -187,6 +175,91 @@ window.RumaUI = (function () {
     function onScroll() { header.classList.toggle("is-stuck", window.scrollY > 8); }
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
+  }
+
+  /* ---------- нижняя панель навигации на телефоне (Liquid Glass) ---------- */
+  var TAB_ICONS = {
+    home: '<path d="M4 11.2L12 4l8 7.2V19a1 1 0 01-1 1h-4.5v-5.5h-5V20H5a1 1 0 01-1-1v-7.8z"/>',
+    about: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.2M12 7.9v.1"/>',
+    menu: '<path d="M5 9h11v5.2A4.8 4.8 0 0111.2 19h-1.4A4.8 4.8 0 015 14.2V9zM16 10.2h1.2a2.4 2.4 0 010 4.8H16M8.5 4.5v2M12.5 4.5v2"/>',
+    rolls: '<ellipse cx="12" cy="12" rx="8.5" ry="8.5"/><circle cx="12" cy="12" r="4.6"/><path d="M12 7.4v4.6h3.4"/>',
+    contacts: '<path d="M12 20.5s6.5-5.6 6.5-11a6.5 6.5 0 10-13 0c0 5.4 6.5 11 6.5 11z"/><circle cx="12" cy="9.5" r="2.3"/>'
+  };
+
+  function setupTabbar() {
+    var page = document.body.dataset.page || "home";
+    var onHome = page === "home";
+    // ссылки ведут туда же, что и верхнее меню; «эта страница» — наверх
+    var items = [
+      { key: "home", label: "Главная", href: onHome ? "#top" : "index.html" },
+      { key: "about", label: "О нас", href: onHome ? "#about" : "index.html#about" },
+      { key: "menu", label: "Меню", href: page === "menu" ? "#top" : onHome ? "#menu" : "index.html#menu" },
+      { key: "rolls", label: "Роллы", href: page === "rolls" ? "#top" : onHome ? "#rolls" : "rolls.html" },
+      { key: "contacts", label: "Контакты", href: onHome ? "#contacts" : "index.html#contacts" }
+    ];
+
+    var nav = document.createElement("nav");
+    nav.className = "tabbar";
+    nav.setAttribute("aria-label", "Разделы сайта");
+    nav.innerHTML = '<div class="tabbar__glass"><span class="tabbar__thumb" aria-hidden="true"></span>' +
+      items.map(function (it) {
+        return '<a class="tabbar__item" data-key="' + it.key + '" href="' + it.href + '">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + TAB_ICONS[it.key] + "</svg>" +
+          "<span>" + it.label + "</span></a>";
+      }).join("") + "</div>";
+    document.body.appendChild(nav);
+
+    var glass = nav.firstChild;
+    var links = Array.prototype.slice.call(nav.querySelectorAll(".tabbar__item"));
+    var activeKey = null;
+
+    function placeThumb() {
+      var active = nav.querySelector(".tabbar__item.is-active");
+      if (!active || !active.offsetWidth) return;
+      glass.style.setProperty("--thumb-x", active.offsetLeft + "px");
+      glass.style.setProperty("--thumb-w", active.offsetWidth + "px");
+      if (!glass.classList.contains("has-thumb")) {
+        glass.classList.add("has-thumb");
+        requestAnimationFrame(function () { requestAnimationFrame(function () { glass.classList.add("thumb-anim"); }); });
+      }
+    }
+
+    function setActive(key) {
+      if (key === activeKey) return;
+      activeKey = key;
+      links.forEach(function (a) {
+        var on = a.dataset.key === key;
+        a.classList.toggle("is-active", on);
+        if (on) a.setAttribute("aria-current", onHome ? "location" : "page");
+        else a.removeAttribute("aria-current");
+      });
+      placeThumb();
+    }
+
+    if (onHome) {
+      // активный пункт — раздел, который сейчас на уровне чтения; пока выше «О нас» — «Главная»
+      var ids = ["about", "menu", "rolls", "contacts"];
+      var ticking = false;
+      var pick = function () {
+        ticking = false;
+        var line = window.innerHeight * 0.45, key = "home";
+        ids.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el && el.getBoundingClientRect().top <= line) key = id;
+        });
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) key = "contacts";
+        setActive(key);
+      };
+      window.addEventListener("scroll", function () {
+        if (!ticking) { ticking = true; requestAnimationFrame(pick); }
+      }, { passive: true });
+      pick();
+    } else {
+      setActive(page);
+    }
+
+    window.addEventListener("resize", placeThumb);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeThumb);
   }
 
   /* ---------- «открыто сейчас» / «закрыто» ---------- */
@@ -243,6 +316,7 @@ window.RumaUI = (function () {
   }
 
   function init() {
+    setupTabbar();   // до шапки: ссылки «наверх» из панели получают плавную прокрутку
     setupHeader();
     setupReveal();
     updateHours();
