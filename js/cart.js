@@ -728,11 +728,17 @@ window.RumaCart = (function () {
   });
   update();
 
+  function refreshState() {
+    var latest = store.read();
+    if (latest.revision !== revision || latest.reset !== resetToken || latest.changed) {
+      acceptState(latest);
+    }
+  }
   window.addEventListener("storage", function (e) {
-    if (e.key === STORAGE_KEY || e.key === null) acceptState(store.read());
+    if (e.key === STORAGE_KEY || e.key === null) refreshState();
   });
-  window.addEventListener("pageshow", function () { acceptState(store.read()); });
-  window.addEventListener("focus", function () { acceptState(store.read()); });
+  window.addEventListener("pageshow", refreshState);
+  window.addEventListener("focus", refreshState);
 
   document.addEventListener("click", function (e) {
     var link = e.target.closest("a[href]");
