@@ -188,10 +188,10 @@ window.RumaCart = (function () {
   notice.setAttribute("role", "status");
   sheetList.before(notice);
 
-  function clearDetails() {
+  function clearDetails(keepConfirmation) {
     details = {};
     payment = "";
-    orderType = ORDER_TYPES[0].value;
+    if (!keepConfirmation) orderType = ORDER_TYPES[0].value;
     extraInput.value = "";
     commentInput.value = "";
     clearTimeout(draftTimer);
@@ -199,8 +199,7 @@ window.RumaCart = (function () {
     try { sessionStorage.removeItem(DRAFT_KEY); } catch (e) {}
     orderBtn.href = "#";
     confirmAgain.href = "#";
-    clearPending();
-    showConfirm(false);
+    if (!keepConfirmation) { clearPending(); showConfirm(false); }
   }
 
   function saveDraft() {
@@ -216,7 +215,7 @@ window.RumaCart = (function () {
     } catch (e) {}
     clearTimeout(draftTimer);
     draftTimer = setTimeout(function () {
-      clearDetails();
+      clearDetails(true);
       applyOrderType();
       showToast("Срок хранения деталей заказа истёк. Укажите их заново.");
     }, DRAFT_TTL);
@@ -227,7 +226,7 @@ window.RumaCart = (function () {
       var data = JSON.parse(sessionStorage.getItem(DRAFT_KEY));
       if (!data) return;
       if (data.reset !== resetToken || !Number.isFinite(data.expires) || data.expires <= Date.now() ||
-          data.expires > Date.now() + DRAFT_TTL) { clearDetails(); return; }
+          data.expires > Date.now() + DRAFT_TTL) { clearDetails(true); return; }
       draftExpires = data.expires;
       orderType = typeByValue(data.orderType) ? data.orderType : ORDER_TYPES[0].value;
       payment = PAYMENT_OPTIONS.indexOf(data.payment) !== -1 ? data.payment : "";
@@ -237,7 +236,7 @@ window.RumaCart = (function () {
       });
       commentInput.value = typeof data.comment === "string" ? data.comment.slice(0, 200) : "";
       extraInput.value = details[orderType] || "";
-      draftTimer = setTimeout(function () { clearDetails(); applyOrderType(); }, data.expires - Date.now());
+      draftTimer = setTimeout(function () { clearDetails(true); applyOrderType(); }, data.expires - Date.now());
     } catch (e) { clearDetails(); }
   }
 
@@ -675,7 +674,12 @@ window.RumaCart = (function () {
   }
 
   function validateOrder() {
-    if (draftExpires && draftExpires <= Date.now()) { clearDetails(); applyOrderType(); }
+    if (draftExpires && draftExpires <= Date.now()) {
+      clearDetails(true);
+      applyOrderType();
+      showToast("Детали заказа устарели. Проверьте способ получения и заполните их заново.");
+      return false;
+    }
     if (count() === 0) return false;
     var type = typeByValue(orderType);
     if (type.extra && type.extra.required && !extraInput.value.trim()) {
