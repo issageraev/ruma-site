@@ -117,6 +117,7 @@ window.RumaCart = (function () {
               '<input class="field__input" id="order-comment" type="text" maxlength="200" placeholder="пожелания, аллергии, «без сахара»…">' +
             "</div>" +
           "</fieldset>" +
+          '<p class="order-hint">Адрес и комментарий хранятся в этой вкладке до 30 минут и передаются в WhatsApp при оформлении.</p>' +
         "</div>" +
 
         '<footer class="sheet__foot">' +
@@ -170,34 +171,111 @@ window.RumaCart = (function () {
   var orderType = ORDER_TYPES[0].value;
   var payment = ""; // способ оплаты (только для такси)
 
-  function saveCart() {
+  var store = RumaCartStore;
+  var revision = "";
+  var resetToken = "";
+  var pendingRevision = "";
+  var details = {};
+  var DRAFT_KEY = "ruma_order_draft_v2";
+  var DRAFT_TTL = 30 * 60 * 1000;
+  var draftTimer;
+  var draftExpires = 0;
+  var pendingSaves = 0;
+  var lastSave = Promise.resolve();
+  var notice = document.createElement("p");
+  notice.className = "notice";
+  notice.hidden = true;
+  notice.setAttribute("role", "status");
+  sheetList.before(notice);
+
+  function clearDetails() {
+    details = {};
+    payment = "";
+    orderType = ORDER_TYPES[0].value;
+    extraInput.value = "";
+    commentInput.value = "";
+    clearTimeout(draftTimer);
+    draftExpires = 0;
+    try { sessionStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    orderBtn.href = "#";
+    confirmAgain.href = "#";
+    clearPending();
+    showConfirm(false);
+  }
+
+  function saveDraft() {
+    orderBtn.href = "#";
+    details[orderType] = extraInput.value;
+    var expires = Date.now() + DRAFT_TTL;
+    draftExpires = expires;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        cart: cart, orderType: orderType, payment: payment,
-        draft: { extra: extraInput.value, comment: commentInput.value }, // поля не пропадают при перезагрузке
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+        expires: expires, reset: resetToken, details: details, payment: payment,
+        orderType: orderType, comment: commentInput.value
       }));
-    } catch (e) { /* приватный режим — работаем без сохранения */ }
+    } catch (e) {}
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(function () {
+      clearDetails();
+      applyOrderType();
+      showToast("Срок хранения деталей заказа истёк. Укажите их заново.");
+    }, DRAFT_TTL);
+  }
+
+  function loadDraft() {
+    try {
+      var data = JSON.parse(sessionStorage.getItem(DRAFT_KEY));
+      if (!data) return;
+      if (data.reset !== resetToken || !Number.isFinite(data.expires) || data.expires <= Date.now() ||
+          data.expires > Date.now() + DRAFT_TTL) { clearDetails(); return; }
+      draftExpires = data.expires;
+      orderType = typeByValue(data.orderType) ? data.orderType : ORDER_TYPES[0].value;
+      payment = PAYMENT_OPTIONS.indexOf(data.payment) !== -1 ? data.payment : "";
+      ORDER_TYPES.forEach(function (type) {
+        var value = data.details && data.details[type.value];
+        if (typeof value === "string") details[type.value] = value.slice(0, 120);
+      });
+      commentInput.value = typeof data.comment === "string" ? data.comment.slice(0, 200) : "";
+      extraInput.value = details[orderType] || "";
+      draftTimer = setTimeout(function () { clearDetails(); applyOrderType(); }, data.expires - Date.now());
+    } catch (e) { clearDetails(); }
+  }
+
+  function acceptState(state) {
+    if (resetToken !== state.reset) clearDetails();
+    resetToken = state.reset;
+    revision = state.revision;
+    cart = state.cart;
+    if (pendingRevision && pendingRevision !== revision) {
+      clearPending();
+      showConfirm(false);
+    }
+    update();
+  }
+
+  function saveCart(change, preserveRevision) {
+    pendingSaves += 1;
+    lastSave = store.mutate(change || function () {}, preserveRevision).then(function (state) {
+      acceptState(store.read());
+      if (!store.available()) showToast("Корзина сохраняется только на этой странице. Хранилище браузера недоступно.");
+      return state;
+    }).finally(function () { pendingSaves -= 1; });
+    return lastSave;
   }
 
   function loadCart() {
-    try {
-      var data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-      if (data && typeof data.cart === "object" && data.cart !== null) {
-        Object.keys(data.cart).forEach(function (k) {
-          var it = data.cart[k];
-          if (it && typeof it.name === "string" && typeof it.price === "number" &&
-              it.price > 0 && typeof it.qty === "number" && it.qty > 0) {
-            cart[k] = { name: it.name, variant: it.variant || "", price: it.price, qty: Math.min(it.qty, 20) };
-          }
-        });
-      }
-      if (data && typeByValue(data.orderType)) orderType = data.orderType;
-      if (data && PAYMENT_OPTIONS.indexOf(data.payment) !== -1) payment = data.payment;
-      if (data && data.draft) {
-        if (typeof data.draft.extra === "string") extraInput.value = data.draft.extra.slice(0, 120);
-        if (typeof data.draft.comment === "string") commentInput.value = data.draft.comment.slice(0, 200);
-      }
-    } catch (e) { /* повреждённые данные — начинаем с пустой корзины */ }
+    var state = store.read();
+    cart = state.cart;
+    revision = state.revision;
+    resetToken = state.reset;
+    if (state.changed) {
+      notice.textContent = "Корзина обновлена по текущему меню. Проверьте цены и состав перед отправкой.";
+      notice.hidden = false;
+    }
+    // Удаляем из прежнего формата адрес, комментарий и сохранённую ссылку.
+    try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+    loadDraft();
+    return saveCart(null, true);
   }
 
   function count() {
@@ -217,20 +295,39 @@ window.RumaCart = (function () {
   }
 
   function add(name, variant, price) {
-    var key = name + "|" + variant + "|" + price;
-    if (cart[key]) cart[key].qty = Math.min(cart[key].qty + 1, 20);
-    else cart[key] = { name: name, variant: variant, price: price, qty: 1 };
-    saveCart();
-    update();
-    bump();
+    var entry = store.find({
+      id: typeof name === "object" ? name.id : undefined,
+      name: typeof name === "object" ? name.name : name, variant: variant, price: price
+    });
+    if (!entry) return Promise.resolve();
+    return saveCart(function (state) {
+      var key = store.itemKey(entry);
+      var existing = state.cart[key];
+      state.cart[key] = {
+        id: entry.id, name: entry.name, variant: entry.variant, price: entry.price,
+        qty: Math.min((existing ? existing.qty : 0) + 1, 20)
+      };
+    }).then(bump);
   }
 
   function changeQty(key, delta) {
-    if (!cart[key]) return;
-    cart[key].qty = Math.min(cart[key].qty + delta, 20);
-    if (cart[key].qty <= 0) delete cart[key];
-    saveCart();
-    update();
+    return saveCart(function (state) {
+      if (!state.cart[key]) return;
+      state.cart[key].qty = Math.min(state.cart[key].qty + delta, 20);
+      if (state.cart[key].qty <= 0) delete state.cart[key];
+    });
+  }
+
+  function resetOrder() {
+    return saveCart(function (state) {
+      state.cart = {};
+      state.reset = Date.now() + "-" + Math.random().toString(36).slice(2);
+    }).then(function () {
+      clearDetails();
+      notice.hidden = true;
+      closeAll();
+      update();
+    });
   }
 
   // плашка корзины коротко «подпрыгивает», когда что-то добавили
@@ -398,8 +495,8 @@ window.RumaCart = (function () {
   });
 
   /* ---------- выбор варианта (объём/размер) ---------- */
-  function pickVariant(name, variants) {
-    pickerTitle.textContent = name;
+  function pickVariant(item, variants) {
+    pickerTitle.textContent = item.name;
     pickerBtns.innerHTML = variants.map(function (v, i) {
       return '<button class="variant-btn" type="button" data-i="' + i + '">' +
         "<span>" + esc(v.label || "Стандарт") + "</span><b>" + money(v.price) + "</b></button>";
@@ -408,8 +505,7 @@ window.RumaCart = (function () {
       var b = e.target.closest(".variant-btn");
       if (!b) return;
       var v = variants[parseInt(b.dataset.i, 10)];
-      add(name, v.label, v.price);
-      closeAll();
+      add(item, v.label, v.price).then(closeAll);
     };
     openOverlay(picker);
   }
@@ -422,11 +518,11 @@ window.RumaCart = (function () {
     var variants = RumaUI.getVariants(item);
     if (!variants) return;
     if (variants.length === 1) {
-      add(item.name, variants[0].label, variants[0].price);
+      add(item, variants[0].label, variants[0].price);
       btn.classList.add("is-flash");
       setTimeout(function () { btn.classList.remove("is-flash"); }, 350);
     } else {
-      pickVariant(item.name, variants);
+      pickVariant(item, variants);
     }
   });
 
@@ -451,9 +547,7 @@ window.RumaCart = (function () {
       return;
     }
     resetClear();
-    cart = {};
-    saveCart();
-    update();
+    resetOrder();
   });
 
   document.getElementById("cart-more").addEventListener("click", function () {
@@ -464,19 +558,21 @@ window.RumaCart = (function () {
 
   document.querySelectorAll('input[name="order-type"]').forEach(function (r) {
     r.addEventListener("change", function () {
+      details[orderType] = extraInput.value;
       orderType = r.value;
-      saveCart();
+      extraInput.value = details[orderType] || "";
+      saveDraft();
       applyOrderType();
     });
   });
 
-  extraInput.addEventListener("input", function () { if (extraInput.value.trim()) setError(""); saveCart(); });
-  commentInput.addEventListener("input", saveCart);
+  extraInput.addEventListener("input", function () { if (extraInput.value.trim()) setError(""); saveDraft(); });
+  commentInput.addEventListener("input", saveDraft);
 
   document.querySelectorAll('input[name="order-pay"]').forEach(function (r) {
     r.addEventListener("change", function () {
       payment = r.value;
-      saveCart();
+      saveDraft();
       setPayError("");
     });
   });
@@ -496,7 +592,7 @@ window.RumaCart = (function () {
     var lines = ["Здравствуйте! Хочу сделать заказ в RUMA:", ""];
     Object.keys(cart).forEach(function (k) {
       var it = cart[k];
-      lines.push("• " + it.name + (it.variant ? " (" + it.variant + ")" : "") +
+      lines.push("• " + store.messageName(it) + (it.variant ? " (" + it.variant + ")" : "") +
         (it.qty > 1 ? " ×" + it.qty : "") + " — " + it.price * it.qty + " ₽");
     });
     lines.push("");
@@ -517,30 +613,37 @@ window.RumaCart = (function () {
      Сайт не может узнать, нажал ли гость «Отправить» в WhatsApp (ссылка лишь открывает чат с текстом).
      Поэтому после перехода в WhatsApp показываем вопрос, и корзину чистим только по ответу «Да, отправил».
      Вопрос переживает перезагрузку страницы (в приложении iPhone страница может выгрузиться, пока открыт WhatsApp). */
-  function setPending(href) {
-    try { localStorage.setItem(PENDING_KEY, JSON.stringify({ ts: Date.now(), href: href })); } catch (e) { /* без сохранения */ }
+  function whatsappLink() {
+    return "https://wa.me/" + WHATSAPP_PHONE + "?text=" + encodeURIComponent(buildMessage());
+  }
+
+  function setPending() {
+    pendingRevision = revision;
+    try { sessionStorage.setItem(PENDING_KEY, JSON.stringify({ ts: Date.now(), revision: revision })); } catch (e) {}
   }
 
   function readPending() {
     try {
-      var p = JSON.parse(localStorage.getItem(PENDING_KEY) || "null");
-      if (p && typeof p.href === "string" && Date.now() - p.ts < PENDING_TTL) return p;
-    } catch (e) { /* повреждённые данные */ }
+      var p = JSON.parse(sessionStorage.getItem(PENDING_KEY));
+      var age = p && Date.now() - p.ts;
+      if (p && Number.isFinite(p.ts) && age >= 0 && age < PENDING_TTL &&
+          p.revision === revision && count() > 0) return p;
+    } catch (e) {}
     return null;
   }
 
   function clearPending() {
-    try { localStorage.removeItem(PENDING_KEY); } catch (e) { /* без сохранения */ }
+    pendingRevision = "";
+    try { sessionStorage.removeItem(PENDING_KEY); } catch (e) {}
+    confirmAgain.href = "#";
   }
 
-  function showConfirm(on, href) {
+  function showConfirm(on) {
     sheetDialog.classList.toggle("is-confirm", on);
     confirmView.hidden = !on;
     sheetDialog.setAttribute("aria-labelledby", on ? "confirm-title" : "cart-title");
-    if (on) {
-      confirmAgain.href = href || "#";
-      document.getElementById("confirm-yes").focus();
-    }
+    confirmAgain.href = on ? whatsappLink() : "#";
+    if (on) document.getElementById("confirm-yes").focus();
   }
 
   function showToast(text) {
@@ -555,43 +658,59 @@ window.RumaCart = (function () {
 
   // заказ ушёл: чистим корзину, поля, оплату и выходим из окна
   function completeOrder() {
-    clearPending();
-    cart = {};
-    payment = "";
-    orderType = ORDER_TYPES[0].value; // новый заказ начинается с обычного формата, а не с «такси»
-    extraInput.value = "";
-    commentInput.value = "";
-    saveCart();
-    showConfirm(false);
-    closeAll();
-    update();
-    showToast("Спасибо! Заказ отправлен — ждём вас в RUMA.");
+    var expected = pendingRevision;
+    saveCart(function (state) {
+      if (!expected || state.revision !== expected) return;
+      state.cart = {};
+      state.reset = Date.now() + "-" + Math.random().toString(36).slice(2);
+    }).then(function () {
+      if (count() > 0) {
+        showToast("Заказ изменился в другой вкладке. Новые позиции сохранены.");
+      } else {
+        clearDetails();
+        closeAll();
+        showToast("Заказ очищен. Дождитесь подтверждения кофейни в WhatsApp.");
+      }
+    });
   }
 
-  orderBtn.addEventListener("click", function (e) {
-    if (count() === 0) { e.preventDefault(); return; }
+  function validateOrder() {
+    if (draftExpires && draftExpires <= Date.now()) { clearDetails(); applyOrderType(); }
+    if (count() === 0) return false;
     var type = typeByValue(orderType);
-    var extra = type.extra;
-    if (extra && extra.required && !extraInput.value.trim()) {
-      e.preventDefault();
-      setError(extra.error);
+    if (type.extra && type.extra.required && !extraInput.value.trim()) {
+      setError(type.extra.error);
       extraInput.focus();
-      return;
+      return false;
     }
     if (type.pay && !payment) {
-      e.preventDefault();
       setPayError(PAYMENT_ERROR);
-      var firstPay = payWrap.querySelector("input");
-      if (firstPay) firstPay.focus();
+      payWrap.querySelector("input").focus();
+      return false;
+    }
+    return true;
+  }
+
+  function prepareLink(e) {
+    if (pendingSaves) { e.preventDefault(); return; }
+    var latest = store.read();
+    if (latest.revision !== revision || latest.changed) {
+      e.preventDefault();
+      acceptState(latest);
+      if (latest.changed) saveCart();
+      notice.textContent = "Заказ обновлён. Проверьте его и нажмите отправку ещё раз.";
+      notice.hidden = false;
       return;
     }
-    var href = "https://wa.me/" + WHATSAPP_PHONE + "?text=" + encodeURIComponent(buildMessage());
-    orderBtn.href = href;
-    setPending(href);
-    // ссылка откроется сама (это действие по умолчанию); окно переключаем уже после неё
-    setTimeout(function () { showConfirm(true, href); }, 60);
-  });
-
+    if (!validateOrder()) { e.preventDefault(); return; }
+    e.currentTarget.href = whatsappLink();
+    setPending();
+    setTimeout(function () {
+      if (pendingRevision === revision) showConfirm(true);
+    }, 60);
+  }
+  orderBtn.addEventListener("click", prepareLink);
+  confirmAgain.addEventListener("click", prepareLink);
   document.getElementById("confirm-yes").addEventListener("click", completeOrder);
 
   document.getElementById("confirm-no").addEventListener("click", function () {
@@ -600,21 +719,30 @@ window.RumaCart = (function () {
     orderBtn.focus();
   });
 
-  confirmAgain.addEventListener("click", function () {
-    // WhatsApp откроется ещё раз; вопрос остаётся на экране
-    setTimeout(function () { document.getElementById("confirm-yes").focus(); }, 60);
-  });
-
-  loadCart();
-  update();
-
-  (function restorePending() {
+  var ready = loadCart().then(function () {
     var pending = readPending();
     if (!pending) { clearPending(); return; }
-    if (count() === 0) { clearPending(); return; }
+    pendingRevision = pending.revision;
     openSheet();
-    showConfirm(true, pending.href);
-  })();
+    showConfirm(true);
+  });
+  update();
+
+  window.addEventListener("storage", function (e) {
+    if (e.key === STORAGE_KEY || e.key === null) acceptState(store.read());
+  });
+  window.addEventListener("pageshow", function () { acceptState(store.read()); });
+  window.addEventListener("focus", function () { acceptState(store.read()); });
+
+  document.addEventListener("click", function (e) {
+    var link = e.target.closest("a[href]");
+    if (!pendingSaves || e.defaultPrevented || !link || link.target === "_blank" ||
+        e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    var target = new URL(link.href);
+    if (target.origin !== location.origin || target.pathname === location.pathname) return;
+    e.preventDefault();
+    lastSave.then(function () { location.assign(target.href); });
+  });
 
   // регистрация окна, созданного другим скриптом: даёт ему Escape, ловушку фокуса и блокировку прокрутки
   function registerOverlay(el) {
@@ -622,7 +750,7 @@ window.RumaCart = (function () {
   }
 
   return {
-    add: add, count: count, openSheet: openSheet, refresh: updateBadges, buildMessage: buildMessage,
+    ready: ready, add: add, count: count, openSheet: openSheet, refresh: updateBadges, buildMessage: buildMessage,
     openOverlay: openOverlay, closeAll: closeAll, registerOverlay: registerOverlay,
   };
 })();

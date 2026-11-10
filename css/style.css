@@ -845,7 +845,7 @@ button.order-submit { width: 100%; border: 0; font-family: inherit; cursor: poin
 }
 
 /* ---------- уведомление ---------- */
-.toast {
+.toast { pointer-events: none;
   position: fixed; left: 50%; bottom: 24px; z-index: 90; width: max-content; max-width: calc(100% - 32px);
   padding: 14px 20px; border-radius: 16px; background: var(--ink); color: var(--cream);
   font-weight: 600; font-size: 0.9375rem; text-align: center;

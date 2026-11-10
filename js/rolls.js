@@ -107,8 +107,7 @@ window.RumaRolls = (function () {
 
   document.getElementById("roll-add").addEventListener("click", function () {
     if (!current) return;
-    RumaCart.add(current.item.name, current.variant.label, current.variant.price);
-    RumaCart.closeAll();
+    RumaCart.add(current.item, current.variant.label, current.variant.price).then(RumaCart.closeAll);
   });
 
   document.addEventListener("click", function (e) {

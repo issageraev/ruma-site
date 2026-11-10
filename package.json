@@ -1,0 +1,10 @@
+{
+  "name": "ruma-site",
+  "private": true,
+  "scripts": {
+    "test": "node tests/cart.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

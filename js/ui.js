@@ -24,9 +24,9 @@ window.RumaUI = (function () {
 
   function getVariants(item) {
     var prices = String(item.price).split("/").map(function (p) {
-      return parseInt(p.replace(/\D/g, ""), 10);
+      return /^\s*\d+\s*$/.test(p) ? Number(p) : NaN;
     });
-    if (prices.some(function (p) { return !p; })) return null; // цена не распознана — без кнопки заказа
+    if (prices.some(function (p) { return !Number.isSafeInteger(p) || p <= 0; })) return null; // цена не распознана — без кнопки заказа
     if (prices.length === 1) return [{ label: item.note || "", price: prices[0] }];
     var labels = sizeLabels(item.note, prices.length);
     return prices.map(function (price, i) {
