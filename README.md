@@ -135,3 +135,9 @@ python3 -m http.server 8734
 
 Хостинг: папку можно выложить как есть на любой статический хостинг
 (GitHub Pages, Netlify, Vercel, reg.ru и т.п.) — сборка не нужна.
+
+## Рабочий адрес
+
+Сайт опубликован на https://ruma.geraevinc.workers.dev/ruma-site/. GitHub Pages публикует страницы перехода для прежних ссылок. Сборка переходов — `node scripts/build-redirects.cjs`.
+
+Публикация файлов в Cloudflare сейчас выполняется отдельно от слияния в GitHub. После правок меню нужно загрузить обновлённые файлы в Worker `ruma`.
