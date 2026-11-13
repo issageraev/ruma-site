@@ -21,15 +21,20 @@
     });
     rows.sort(function (a, b) { return featuredRank(a.item) - featuredRank(b.item); });
     panel.setAttribute("aria-labelledby", "tab-" + group);
-    panel.innerHTML = '<ul class="items">' + rows.map(function (r, i) {
-      return RumaUI.itemRow(group, r.ci, r.ii, r.item, r.cat, { number: RumaUI.pad(i + 1), category: true });
-    }).join("") + "</ul>";
+    if (group === "rolls") {
+      panel.innerHTML = '<div class="rolls-grid rolls-grid--featured" data-rolls="featured"></div>';
+      RumaRolls.mount(panel.firstChild);
+    } else {
+      panel.innerHTML = '<ul class="items">' + rows.map(function (r, i) {
+        return RumaUI.itemRow(group, r.ci, r.ii, r.item, r.cat, { number: RumaUI.pad(i + 1), category: true });
+      }).join("") + "</ul>";
+    }
 
     document.getElementById("full-menu-link").href = "menu.html#" + group; // ведёт на ту же вкладку
     RumaCart.refresh();
   }
 
-  var order = ["drinks", "food"];
+  var order = ["drinks", "food", "rolls"];
   var tabs = RumaUI.setupTabs(tabsRoot, function (key) {
     var dir = order.indexOf(key) - order.indexOf(currentGroup);
     currentGroup = key;
@@ -39,11 +44,13 @@
   // свайп по списку: влево — следующая вкладка, вправо — предыдущая
   var startX = 0, startY = 0, tracking = false;
   panel.addEventListener("touchstart", function (e) {
-    if (e.touches.length !== 1) return;
+    tracking = false;
+    if (e.touches.length !== 1 || e.target.closest("button, a, input")) return;
     tracking = true;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
   }, { passive: true });
+  panel.addEventListener("touchcancel", function () { tracking = false; }, { passive: true });
   panel.addEventListener("touchend", function (e) {
     if (!tracking) return;
     tracking = false;
@@ -53,6 +60,14 @@
   }, { passive: true });
 
   render("drinks");
+
+  function restoreRollsAnchor() {
+    if (location.hash !== "#rolls") return;
+    tabs.select("rolls");
+    requestAnimationFrame(function () { document.getElementById("menu").scrollIntoView(); });
+  }
+  window.addEventListener("hashchange", restoreRollsAnchor);
+  restoreRollsAnchor();
 
   // время завтраков в контактах берём из пометки категории «Завтраки» в js/menu.js
   var breakfast = MENU.food.filter(function (c) { return c.title === "Завтраки"; })[0];
