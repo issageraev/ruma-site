@@ -34,6 +34,15 @@ window.RumaUI = (function () {
     });
   }
 
+  // В списке — одна цена. Конкретный объём и его стоимость гость выбирает после «+».
+  function priceLabel(item) {
+    var variants = getVariants(item);
+    if (!variants) return String(item.price) + " ₽";
+    var minimum = Math.min.apply(null, variants.map(function (v) { return v.price; }));
+    var amount = String(minimum).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return (variants.length > 1 ? "от " : "") + amount + " ₽";
+  }
+
   /* ---------- строка позиции меню ---------- */
   // opts.number — порядковый номер; opts.category — показать название категории, если нет описания
   function itemRow(groupKey, ci, ii, item, cat, opts) {
@@ -48,7 +57,7 @@ window.RumaUI = (function () {
           (item.badge ? ' <span class="badge">' + esc(item.badge) + "</span>" : "") + "</h4>" +
         (sub ? '<p class="item__desc">' + esc(sub) + "</p>" : "") +
       "</div>" +
-      '<span class="item__price">' + esc(item.price) + "&nbsp;₽</span>" +
+      '<span class="item__price">' + esc(priceLabel(item)) + "</span>" +
       (canOrder
         ? '<button class="item__add" type="button" data-group="' + groupKey + '" data-ci="' + ci + '" data-ii="' + ii +
           '" aria-label="Добавить в заказ: ' + esc(item.name) + '"></button>'
@@ -78,8 +87,8 @@ window.RumaUI = (function () {
     list.forEach(function (el) {
       if (!el.animate || !el.isConnected || !el.getClientRects().length) return;
       var a = el.animate(
-        [{ opacity: 0.65, transform: "translateX(" + (dir >= 0 ? 6 : -6) + "px)" }, { opacity: 1, transform: "translateX(0)" }],
-        { duration: 180, easing: "ease-out" });
+        [{ opacity: 0.65 }, { opacity: 1 }],
+        { duration: 200, easing: "ease-out" });
       swaps.set(el, a);
       a.finished.catch(function () {}).then(function () { if (swaps.get(el) === a) swaps.delete(el); });
     });
@@ -124,6 +133,10 @@ window.RumaUI = (function () {
     }
 
     function select(key, focus) {
+      if (key === current) {
+        if (focus) root.querySelector(".tab.is-active").focus({ preventScroll: true });
+        return;
+      }
       current = key;
       tabs.forEach(function (t) {
         var on = t.dataset.tab === key;
@@ -320,6 +333,6 @@ window.RumaUI = (function () {
 
   return {
     esc: esc, pad: pad, plural: plural, getVariants: getVariants, itemRow: itemRow,
-    setupTabs: setupTabs, swapContent: swapContent, isOpenNow: isOpenNow, hours: HOURS, init: init,
+    setupTabs: setupTabs, swapContent: swapContent, priceLabel: priceLabel, isOpenNow: isOpenNow, hours: HOURS, init: init,
   };
 })();

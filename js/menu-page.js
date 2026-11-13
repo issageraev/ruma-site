@@ -111,7 +111,7 @@ window.RumaMenuPage = (function () {
     RumaUI.swapContent([panel, chips], dir, function () {
       render(key);
       var top = panel.getBoundingClientRect().top + window.scrollY - document.getElementById("menubar").offsetHeight - document.querySelector(".topbar").offsetHeight - 8;
-      if (window.scrollY > top) window.scrollTo({ top: top, behavior: "auto" });
+      if (window.scrollY > top) window.scrollTo({ top: top, behavior: "instant" });
     });
   });
 
