@@ -91,6 +91,26 @@ window.RumaUI = (function () {
     var tabs = Array.prototype.slice.call(root.querySelectorAll(".tab"));
     var current = tabs[0].dataset.tab;
 
+    // Общий размер подписи подстраивается под реальные метрики шрифта, включая запасной.
+    function resizeTabs() {
+      if (!root.isConnected || !root.offsetWidth) return;
+      root.style.removeProperty("--tab-label-size");
+      if (root.classList.contains("tabs--menu") && matchMedia("(max-width: 600px)").matches) {
+        var size = parseFloat(getComputedStyle(tabs[0]).fontSize);
+        var scale = 1;
+        tabs.forEach(function (t) {
+          var css = getComputedStyle(t);
+          var available = t.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight) - 1;
+          var range = document.createRange();
+          range.selectNodeContents(t);
+          var width = range.getBoundingClientRect().width;
+          if (width > 0) scale = Math.min(scale, available / width);
+        });
+        if (scale < 1) root.style.setProperty("--tab-label-size", (size * scale).toFixed(2) + "px");
+      }
+      placeThumb();
+    }
+
     function placeThumb() {
       var active = root.querySelector(".tab.is-active");
       if (!active || !active.offsetWidth) return;
@@ -126,10 +146,10 @@ window.RumaUI = (function () {
       });
     });
 
-    placeThumb();
-    window.addEventListener("resize", placeThumb);
-    document.addEventListener("ruma:navigation", placeThumb);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeThumb); // шрифт меняет ширину кнопок
+    resizeTabs();
+    window.addEventListener("resize", resizeTabs);
+    document.addEventListener("ruma:navigation", resizeTabs);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(resizeTabs); // шрифт меняет ширину кнопок
 
     return {
       select: select,
