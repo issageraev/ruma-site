@@ -959,7 +959,7 @@ button.order-submit { width: 100%; border: 0; font-family: inherit; cursor: poin
 }
 
 /* Подписи навигации — элементы управления: двойной щелчок не выделяет текст. */
-.topbar__nav, .tabbar, .tabs, .chips, .footer__nav {
+.topbar__nav, .topbar__logo, .topbar__logo *, .topbar__order, .topbar__order *, .tabbar, .tabs, .chips, .footer__nav {
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
 }
 .page-menu .statusbar { display: none; }
@@ -970,3 +970,5 @@ button.order-submit { width: 100%; border: 0; font-family: inherit; cursor: poin
 @media (max-width: 360px) {
   .tabs--menu { width: calc(100% + 24px); max-width: calc(100% + 24px); margin-inline: -12px; }
 }
+
+.topbar__logo img { -webkit-user-drag: none; }

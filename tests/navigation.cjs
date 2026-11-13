@@ -99,6 +99,10 @@ const base = "https://ruma-test.invalid/ruma-site/";
       assert.ok(labels.every(t=>t.rows===1 && t.fits), width+'px: labels should be one line');
     }
     assert.equal(await page.locator('.topbar__nav').evaluate(el=>getComputedStyle(el).userSelect), 'none');
+    for (const selector of ['.topbar__logo', '.topbar__logo img', '.topbar__order', '.topbar__order span']) {
+      assert.equal(await page.locator(selector).first().evaluate(el=>getComputedStyle(el).userSelect), 'none');
+    }
+    assert.equal(await page.locator('.topbar__logo img').evaluate(el=>el.draggable), false);
     assert.deepEqual(errors, []);
     await context.close();
     console.log('PASS navigation without reload, cached views, repeated taps, cart preservation, Back/Forward and single-line labels');

@@ -78,6 +78,16 @@ window.RumaNavigation = (function () {
     window.scrollTo({ top: top, behavior: smooth ? "smooth" : "instant" });
   }
 
+  var viewAnimation = null;
+  function revealView(view) {
+    if (viewAnimation) { viewAnimation.cancel(); viewAnimation = null; }
+    if (!view.main.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Содержимое уже на месте: лёгкое появление не задерживает нажатие и не ставится в очередь.
+    viewAnimation = view.main.animate(
+      [{ opacity: 0.55 }, { opacity: 1 }],
+      { duration: 220, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
+  }
+
   async function navigate(url, restore) {
     var page = pageFromUrl(url);
     if (!page) return;
@@ -118,6 +128,7 @@ window.RumaNavigation = (function () {
       if (switched) {
         view.main.setAttribute("tabindex", "-1");
         view.main.focus({ preventScroll: true });
+        revealView(view);
       }
     } catch (err) {
       console.warn("RUMA navigation fallback", err);
