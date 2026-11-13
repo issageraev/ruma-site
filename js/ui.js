@@ -193,8 +193,7 @@ window.RumaUI = (function () {
     var items = [
       { key: "home", label: "Главная", href: onHome ? "#top" : "index.html" },
       { key: "about", label: "О нас", href: onHome ? "#about" : "index.html#about" },
-      { key: "menu", label: "Меню", href: page === "menu" ? "#top" : onHome ? "#menu" : "index.html#menu" },
-      { key: "rolls", label: "Роллы", href: page === "rolls" ? "#top" : onHome ? "#rolls" : "rolls.html" },
+      { key: "menu", label: "Меню", href: page === "menu" ? "#top" : "menu.html" },
       { key: "contacts", label: "Контакты", href: onHome ? "#contacts" : "index.html#contacts" }
     ];
 
@@ -238,7 +237,7 @@ window.RumaUI = (function () {
 
     if (onHome) {
       // активный пункт — раздел, который сейчас на уровне чтения; пока выше «О нас» — «Главная»
-      var ids = ["about", "menu", "rolls", "contacts"];
+      var ids = ["about", "menu", "contacts"];
       var ticking = false;
       var pick = function () {
         ticking = false;

@@ -8,7 +8,8 @@
   var chips = document.getElementById("chips");
   var tabsRoot = document.getElementById("menu-tabs");
   var currentGroup = "drinks";
-  var order = ["drinks", "food"];
+  var restoringHistory = false;
+  var order = ["drinks", "food", "rolls"];
 
   // категории с одинаковым group (или без него — по своему названию) собираются в один раздел
   function groupsOf(cats) {
@@ -22,6 +23,19 @@
   }
 
   function render(group) {
+    var isRolls = group === "rolls";
+    panel.setAttribute("aria-labelledby", "tab-" + group);
+    chips.hidden = isRolls;
+    if (isRolls) {
+      if (observer) observer.disconnect();
+      panel.innerHTML = '<section class="cat cat--rolls" aria-labelledby="rolls-heading">' +
+        '<h2 class="cat__title" id="rolls-heading">Роллы</h2>' +
+        '<p class="cat__intro">Нажмите на фото, чтобы посмотреть состав и два ракурса блюда.</p>' +
+        '<div class="rolls-grid" data-rolls="all"></div></section>';
+      RumaRolls.mount(panel.querySelector("[data-rolls]"));
+      RumaCart.refresh();
+      return;
+    }
     var groups = groupsOf(MENU[group]);
 
     panel.innerHTML = groups.map(function (g, gi) {
@@ -72,6 +86,8 @@
     panel.querySelectorAll(".cat").forEach(function (s) { observer.observe(s); });
   }
 
+  window.addEventListener("resize", observeCategories);
+
   // плавная прокрутка к категории с учётом высоты липких панелей
   chips.addEventListener("click", function (e) {
     var a = e.target.closest("a.chip");
@@ -87,6 +103,7 @@
     if (key === currentGroup) return;
     var dir = order.indexOf(key) - order.indexOf(currentGroup);
     currentGroup = key;
+    if (!restoringHistory && location.hash !== "#" + key) history.pushState(null, "", "#" + key);
     // список и чипсы плавно сменяются, а новая вкладка читается с начала списка
     RumaUI.swapContent([panel, chips], dir, function () {
       render(key);
@@ -98,11 +115,13 @@
   // свайп влево/вправо переключает вкладки и здесь
   var startX = 0, startY = 0, tracking = false;
   panel.addEventListener("touchstart", function (e) {
-    if (e.touches.length !== 1) return;
+    tracking = false;
+    if (e.touches.length !== 1 || e.target.closest("button, a, input")) return;
     tracking = true;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
   }, { passive: true });
+  panel.addEventListener("touchcancel", function () { tracking = false; }, { passive: true });
   panel.addEventListener("touchend", function (e) {
     if (!tracking) return;
     tracking = false;
@@ -110,6 +129,18 @@
     var dy = e.changedTouches[0].clientY - startY;
     if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 2) tabs.step(dx < 0 ? 1 : -1);
   }, { passive: true });
+
+  function restoreTab() {
+    var key = location.hash.slice(1);
+    // #top и #main — обычные якоря страницы, они не выбирают раздел.
+    if (key && order.indexOf(key) === -1) return;
+    restoringHistory = true;
+    try { tabs.select(key || "drinks"); }
+    finally { restoringHistory = false; } // восстановление не создаёт новую запись истории
+
+  }
+  window.addEventListener("popstate", restoreTab);
+  window.addEventListener("hashchange", restoreTab);
 
   // ссылка вида menu.html#food открывает нужную вкладку сразу
   var wanted = location.hash.slice(1);
