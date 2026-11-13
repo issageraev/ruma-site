@@ -33,6 +33,15 @@ const base = "https://ruma-test.invalid/ruma-site/";
     const expectedCounts = await page.evaluate(() => Object.fromEntries(Object.entries(MENU).map(([key, cats]) => [key, cats.reduce((n, c) => n + c.items.length, 0)])));
     assert.equal(await page.locator("#menu-panel .item").count(), expectedCounts.drinks);
     const drinkChips = await page.locator(".chip").allTextContents();
+    const shownPrice = name => page.locator('.item').filter({ has: page.getByRole('heading', { name, exact: true }) }).locator('.item__price').textContent().then(t => t.replace(/\s/g, ' '));
+    assert.equal(await shownPrice("Фильтр"), "от 230 ₽");
+    assert.equal(await shownPrice("Капучино хит"), "от 260 ₽");
+    assert.equal(await shownPrice("V60"), "220 ₽");
+    await page.getByRole('button', { name: 'Добавить в заказ: Фильтр', exact: true }).click();
+    const filterOptions = (await page.locator('.variant-btn').allTextContents()).map(t => t.replace(/\s/g, ' '));
+    assert.ok(filterOptions[0].includes('230') && filterOptions[1].includes('260'));
+    await page.keyboard.press('Escape');
+
     await page.getByRole("button", { name: "Добавить в заказ: Капучино", exact: true }).click();
     await page.locator(".variant-btn").last().click();
     await page.waitForFunction(() => RumaCart.count() === 1);
@@ -43,6 +52,13 @@ const base = "https://ruma-test.invalid/ruma-site/";
     await page.waitForFunction(() => RumaCart.count() === 2);
     await choose("rolls");
     assert.equal(await page.locator("#menu-panel .roll-card").count(), expectedCounts.rolls);
+    assert.equal(await page.locator('.card-actions').evaluateAll(groups => groups.every(group => {
+      const outer = group.getBoundingClientRect();
+      const price = group.querySelector('.roll-card__price').getBoundingClientRect();
+      const button = group.querySelector('.item__add').getBoundingClientRect();
+      return Math.abs((price.left + button.right) / 2 - (outer.left + outer.right) / 2) <= 1 && Math.abs(button.left - price.right - 16) <= 1;
+    })), true, 'price and add button must form one centered group');
+
     assert.equal(await page.locator("#chips").isVisible(), false);
     const text = await page.locator(".roll-card__desc").first().textContent();
     await page.locator(".roll-card__open").first().click();
@@ -110,7 +126,8 @@ const base = "https://ruma-test.invalid/ruma-site/";
       await page.setViewportSize({ width, height: 900 });
       for (const key of ["drinks", "food", "rolls"]) {
         await choose(key);
-        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, width + "px: overflow in " + key);
+        const overflow = await page.evaluate(() => ({ width: document.documentElement.scrollWidth, offenders: [...document.querySelectorAll("#menu-panel *")].filter(el => el.getBoundingClientRect().right > innerWidth + 1).slice(0, 6).map(el => ({ name: el.className, text: el.textContent.slice(0, 60) })) }));
+        assert.ok(overflow.width <= width, width + "px: overflow in " + key + ": " + JSON.stringify(overflow));
         assert.equal(await page.locator(".tab").evaluateAll(tabs => tabs.every(t => t.scrollWidth <= t.clientWidth + 1 && t.scrollHeight <= t.clientHeight + 1)), true, width + "px: clipped labels");
       }
     }
@@ -126,6 +143,29 @@ const base = "https://ruma-test.invalid/ruma-site/";
     await selected("rolls");
     await page.waitForFunction(() => document.querySelector("#menu-panel").getAnimations().length === 0);
     assert.equal(await page.locator(".roll-card").count(), expectedCounts.rolls);
+    // The panel must not continue scrolling after the fade, or rerender on a repeated tap.
+    await page.setViewportSize({ width: 440, height: 956 });
+    await choose("drinks");
+    await page.waitForFunction(() => document.querySelector("#menu-panel").getAnimations().length === 0);
+    const transition = await page.evaluate(async () => {
+      window.scrollTo({ top: 1000, behavior: "instant" });
+      const panel = document.getElementById("menu-panel");
+      let renders = 0;
+      const observer = new MutationObserver(records => { renders += records.filter(r => r.attributeName === 'aria-labelledby').length; });
+      observer.observe(panel, { attributes: true });
+      const tab = document.querySelector('#menu-tabs [data-tab="food"]');
+      tab.click();
+      const positions = [scrollY];
+      for (let i = 0; i < 30; i++) { await new Promise(requestAnimationFrame); positions.push(scrollY); }
+      for (let i = 0; i < 10; i++) tab.click();
+      await new Promise(requestAnimationFrame);
+      const animations = panel.getAnimations().length;
+      observer.disconnect();
+      return { positions, renders, animations };
+    });
+    assert.ok(Math.max(...transition.positions) - Math.min(...transition.positions) <= 1, 'scrolling must finish before the fade begins');
+    assert.equal(transition.renders, 1);
+    assert.equal(transition.animations, 0);
     assert.deepEqual(errors, []);
     await context.close();
     console.log("Unified menu: all sections, photos, cart, redirects, history, keyboard and responsive layout passed.");

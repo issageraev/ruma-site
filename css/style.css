@@ -325,12 +325,12 @@ fieldset { border: 0; min-width: 0; }
   transform: translateX(var(--thumb-x, 0)); opacity: 0;
 }
 .tabs.has-thumb::before { opacity: 1; }
-.tabs.thumb-anim::before { transition: transform 0.4s cubic-bezier(0.3, 0.8, 0.3, 1), width 0.4s cubic-bezier(0.3, 0.8, 0.3, 1); }
+.tabs.thumb-anim::before { transition: transform 0.2s ease-out; }
 .tab {
   position: relative; z-index: 1;
   padding: 12px 24px; border: 0; border-radius: 999px; background: none;
   font-weight: 600; font-size: 0.95rem; color: var(--ink-soft); white-space: nowrap;
-  transition: color 0.3s;
+  transition: color 0.2s;
 }
 .tab:hover { color: var(--ink); }
 .tab.is-active { color: var(--cream); }
@@ -345,6 +345,8 @@ fieldset { border: 0; min-width: 0; }
   padding: 22px 0; border-bottom: 1px solid var(--line);
 }
 .page-menu .item { grid-template-columns: minmax(0, 1fr) auto auto; }
+
+.item__main { min-width: 0; overflow-wrap: anywhere; }
 
 .item__num { font-size: 0.8125rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 /* позиции меню — простой гротеск (Manrope): названия и состав читаются быстро, без тонких засечек */
@@ -759,7 +761,10 @@ fieldset { border: 0; min-width: 0; }
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   margin-top: 6px; font-size: 0.875rem; line-height: 1.5; color: var(--ink-menu);
 }
-.roll-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 2px 0; }
+/* Общая группа действий карточек с фотографией: цена и плюс собраны по центру. */
+.card-actions { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.card-actions .item__add { flex-shrink: 0; }
+.roll-card__foot { padding: 16px 2px 0; }
 .roll-card__price { font-weight: 700; font-size: 1.125rem; font-variant-numeric: tabular-nums; }
 
 /* ---------- окно ролла ---------- */

@@ -30,8 +30,8 @@ window.RumaRolls = (function () {
           '<span class="roll-card__desc">' + esc(item.desc) + "</span>" +
         "</span>" +
       "</button>" +
-      '<div class="roll-card__foot">' +
-        '<span class="roll-card__price">' + money(item.price) + "</span>" +
+      '<div class="roll-card__foot card-actions">' +
+        '<span class="roll-card__price">' + esc(RumaUI.priceLabel(item)) + "</span>" +
         '<button class="item__add roll-card__add" type="button" ' + attrs +
           ' aria-label="Добавить в заказ: ' + esc(item.name) + '"></button>' +
       "</div>" +
