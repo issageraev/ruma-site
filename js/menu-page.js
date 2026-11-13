@@ -1,8 +1,8 @@
 /* Страница полного меню: все категории вкладки, липкая панель с «чипсами» */
-(function () {
+window.RumaMenuPage = (function () {
   "use strict";
 
-  RumaUI.init();
+  function mount() {
 
   var panel = document.getElementById("menu-panel");
   var chips = document.getElementById("chips");
@@ -70,7 +70,7 @@
   var observer = null;
   function observeCategories() {
     if (observer) observer.disconnect();
-    if (!("IntersectionObserver" in window)) return;
+    if (!panel.isConnected || !("IntersectionObserver" in window)) return;
     // «линия чтения» — полоса под липкими панелями; секция, пересекающая её, активна
     var top = document.querySelector(".topbar").offsetHeight + document.getElementById("menubar").offsetHeight + 24;
     observer = new IntersectionObserver(function (entries) {
@@ -103,7 +103,10 @@
     if (key === currentGroup) return;
     var dir = order.indexOf(key) - order.indexOf(currentGroup);
     currentGroup = key;
-    if (!restoringHistory && location.hash !== "#" + key) history.pushState(null, "", "#" + key);
+    if (!restoringHistory && location.hash !== "#" + key) {
+      RumaNavigation.rememberScroll();
+      history.pushState(null, "", "#" + key);
+    }
     // список и чипсы плавно сменяются, а новая вкладка читается с начала списка
     RumaUI.swapContent([panel, chips], dir, function () {
       render(key);
@@ -131,6 +134,7 @@
   }, { passive: true });
 
   function restoreTab() {
+    if (document.body.dataset.page !== "menu") return;
     var key = location.hash.slice(1);
     // #top и #main — обычные якоря страницы, они не выбирают раздел.
     if (key && order.indexOf(key) === -1) return;
@@ -139,8 +143,7 @@
     finally { restoringHistory = false; } // восстановление не создаёт новую запись истории
 
   }
-  window.addEventListener("popstate", restoreTab);
-  window.addEventListener("hashchange", restoreTab);
+  document.addEventListener("ruma:navigation", function () { restoreTab(); observeCategories(); });
 
   // ссылка вида menu.html#food открывает нужную вкладку сразу
   var wanted = location.hash.slice(1);
@@ -151,4 +154,6 @@
   } else {
     render("drinks");
   }
+  }
+  return { mount: mount };
 })();

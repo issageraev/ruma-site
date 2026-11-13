@@ -67,40 +67,21 @@ window.RumaUI = (function () {
   }
 
   /* ---------- плавная смена содержимого (вкладки меню) ---------- */
-  // старое содержимое уходит в сторону и гаснет, новое выезжает с другой стороны.
-  // dir > 0 — движемся «вперёд» (влево), dir < 0 — «назад». Быстрые клики не копятся:
-  // остаётся только последний.
-  var swapBusy = false, swapQueued = null;
-
+  // Содержимое меняется сразу. Новое нажатие прерывает прежнюю анимацию,
+  // поэтому быстрые переключения не создают очередь и не задерживают интерфейс.
+  var swaps = new WeakMap();
   function swapContent(els, dir, render) {
     var list = Array.isArray(els) ? els : [els];
-    var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (calm || !list[0].animate) { render(); return; }
-    if (swapBusy) { swapQueued = { els: list, dir: dir, render: render }; return; }
-    swapBusy = true;
-
-    var shift = (dir >= 0 ? -1 : 1) * 24;
-    var leaving = list.map(function (el) {
-      return el.animate(
-        [{ opacity: 1, transform: "translateX(0)" }, { opacity: 0, transform: "translateX(" + shift + "px)" }],
-        { duration: 150, easing: "ease-in", fill: "forwards" });
-    });
-
-    Promise.all(leaving.map(function (a) { return a.finished; })).then(function () {
-      render();
-      var entering = list.map(function (el) {
-        return el.animate(
-          [{ opacity: 0, transform: "translateX(" + (-shift) + "px)" }, { opacity: 1, transform: "translateX(0)" }],
-          { duration: 320, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
-      });
-      leaving.forEach(function (a) { a.cancel(); });
-      return Promise.all(entering.map(function (a) { return a.finished; }));
-    }).catch(function () { /* анимацию прервали — содержимое уже на месте */ }).then(function () {
-      swapBusy = false;
-      if (swapQueued) {
-        var q = swapQueued; swapQueued = null;
-        swapContent(q.els, q.dir, q.render);
-      }
+    list.forEach(function (el) { var old = swaps.get(el); if (old) old.cancel(); });
+    render();
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    list.forEach(function (el) {
+      if (!el.animate || !el.isConnected || !el.getClientRects().length) return;
+      var a = el.animate(
+        [{ opacity: 0.65, transform: "translateX(" + (dir >= 0 ? 6 : -6) + "px)" }, { opacity: 1, transform: "translateX(0)" }],
+        { duration: 180, easing: "ease-out" });
+      swaps.set(el, a);
+      a.finished.catch(function () {}).then(function () { if (swaps.get(el) === a) swaps.delete(el); });
     });
   }
 
@@ -109,6 +90,26 @@ window.RumaUI = (function () {
   function setupTabs(root, onChange) {
     var tabs = Array.prototype.slice.call(root.querySelectorAll(".tab"));
     var current = tabs[0].dataset.tab;
+
+    // Общий размер подписи подстраивается под реальные метрики шрифта, включая запасной.
+    function resizeTabs() {
+      if (!root.isConnected || !root.offsetWidth) return;
+      root.style.removeProperty("--tab-label-size");
+      if (root.classList.contains("tabs--menu") && matchMedia("(max-width: 600px)").matches) {
+        var size = parseFloat(getComputedStyle(tabs[0]).fontSize);
+        var scale = 1;
+        tabs.forEach(function (t) {
+          var css = getComputedStyle(t);
+          var available = t.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight) - 1;
+          var range = document.createRange();
+          range.selectNodeContents(t);
+          var width = range.getBoundingClientRect().width;
+          if (width > 0) scale = Math.min(scale, available / width);
+        });
+        if (scale < 1) root.style.setProperty("--tab-label-size", (size * scale).toFixed(2) + "px");
+      }
+      placeThumb();
+    }
 
     function placeThumb() {
       var active = root.querySelector(".tab.is-active");
@@ -145,9 +146,10 @@ window.RumaUI = (function () {
       });
     });
 
-    placeThumb();
-    window.addEventListener("resize", placeThumb);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeThumb); // шрифт меняет ширину кнопок
+    resizeTabs();
+    window.addEventListener("resize", resizeTabs);
+    document.addEventListener("ruma:navigation", resizeTabs);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(resizeTabs); // шрифт меняет ширину кнопок
 
     return {
       select: select,
@@ -163,14 +165,6 @@ window.RumaUI = (function () {
     var header = document.querySelector(".topbar");
     if (!header) return;
 
-    // логотип и ссылки «наверх» на этой же странице — плавно к самому верху, без #top в адресе
-    document.querySelectorAll('a[href="#top"]').forEach(function (a) {
-      a.addEventListener("click", function (e) {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
-      });
-    });
     // тень у шапки, когда страница прокручена
     function onScroll() { header.classList.toggle("is-stuck", window.scrollY > 8); }
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -191,10 +185,10 @@ window.RumaUI = (function () {
     var onHome = page === "home";
     // ссылки ведут туда же, что и верхнее меню; «эта страница» — наверх
     var items = [
-      { key: "home", label: "Главная", href: onHome ? "#top" : "index.html" },
-      { key: "about", label: "О нас", href: onHome ? "#about" : "index.html#about" },
-      { key: "menu", label: "Меню", href: page === "menu" ? "#top" : "menu.html" },
-      { key: "contacts", label: "Контакты", href: onHome ? "#contacts" : "index.html#contacts" }
+      { key: "home", label: "Главная", href: "index.html" },
+      { key: "about", label: "О нас", href: "index.html#about" },
+      { key: "menu", label: "Меню", href: "menu.html" },
+      { key: "contacts", label: "Контакты", href: "index.html#contacts" }
     ];
 
     var nav = document.createElement("nav");
@@ -229,33 +223,32 @@ window.RumaUI = (function () {
       links.forEach(function (a) {
         var on = a.dataset.key === key;
         a.classList.toggle("is-active", on);
-        if (on) a.setAttribute("aria-current", onHome ? "location" : "page");
+        if (on) a.setAttribute("aria-current", document.body.dataset.page === "home" ? "location" : "page");
         else a.removeAttribute("aria-current");
       });
       placeThumb();
     }
 
-    if (onHome) {
-      // активный пункт — раздел, который сейчас на уровне чтения; пока выше «О нас» — «Главная»
-      var ids = ["about", "menu", "contacts"];
-      var ticking = false;
-      var pick = function () {
-        ticking = false;
-        var line = window.innerHeight * 0.45, key = "home";
+    var ids = ["about", "menu", "contacts"];
+    var ticking = false;
+    function pick() {
+      ticking = false;
+      var onHomeNow = document.body.dataset.page === "home";
+      var key = onHomeNow ? "home" : "menu";
+      if (onHomeNow) {
+        var line = window.innerHeight * 0.45;
         ids.forEach(function (id) {
           var el = document.getElementById(id);
           if (el && el.getBoundingClientRect().top <= line) key = id;
         });
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) key = "contacts";
-        setActive(key);
-      };
-      window.addEventListener("scroll", function () {
-        if (!ticking) { ticking = true; requestAnimationFrame(pick); }
-      }, { passive: true });
-      pick();
-    } else {
-      setActive(page);
+      }
+      setActive(key);
     }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(pick); }
+    }, { passive: true });
+    document.addEventListener("ruma:navigation", function () { pick(); placeThumb(); });
+    pick();
 
     window.addEventListener("resize", placeThumb);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeThumb);
@@ -301,7 +294,7 @@ window.RumaUI = (function () {
 
   /* ---------- плавное появление блоков при прокрутке ---------- */
   function setupReveal() {
-    var els = document.querySelectorAll(".reveal");
+    var els = document.querySelectorAll(".reveal:not(.is-in)");
     if (!("IntersectionObserver" in window)) {
       els.forEach(function (el) { el.classList.add("is-in"); });
       return;
@@ -315,11 +308,12 @@ window.RumaUI = (function () {
   }
 
   function init() {
-    setupTabbar();   // до шапки: ссылки «наверх» из панели получают плавную прокрутку
+    setupTabbar();
     setupHeader();
     setupReveal();
     updateHours();
     setInterval(updateHours, 60000);
+    document.addEventListener("ruma:navigation", function () { setupReveal(); updateHours(); });
     var y = document.getElementById("year");
     if (y) y.textContent = new Date().getFullYear();
   }

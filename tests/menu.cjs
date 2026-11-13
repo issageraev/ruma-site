@@ -82,6 +82,10 @@ const base = "https://ruma-test.invalid/ruma-site/";
     await page.locator('.tabbar__item[data-key="home"]').click();
     await page.waitForURL(base + "index.html");
     await page.locator('.tabbar__item[data-key="menu"]').click();
+    await page.waitForURL(base + "menu.html#rolls");
+    await selected("rolls"); // возврат сохраняет прежний раздел
+    await page.goto(base + "index.html");
+    await page.locator('.tabbar__item[data-key="menu"]').click();
     await page.waitForURL(base + "menu.html");
 
     // Back to the initial hashless URL must preserve Forward and allow leaving the catalogue.

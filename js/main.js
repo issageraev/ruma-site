@@ -1,8 +1,8 @@
 /* Главная страница: подборка меню со свайпом и карусель отзывов */
-(function () {
+window.RumaHome = (function () {
   "use strict";
 
-  RumaUI.init();
+  function mount() {
 
   /* ---------- подборка меню ---------- */
   var panel = document.getElementById("menu-panel");
@@ -36,6 +36,7 @@
 
   var order = ["drinks", "food", "rolls"];
   var tabs = RumaUI.setupTabs(tabsRoot, function (key) {
+    if (key === currentGroup) return;
     var dir = order.indexOf(key) - order.indexOf(currentGroup);
     currentGroup = key;
     RumaUI.swapContent(panel, dir, function () { render(key); });
@@ -62,11 +63,10 @@
   render("drinks");
 
   function restoreRollsAnchor() {
-    if (location.hash !== "#rolls") return;
+    if (document.body.dataset.page !== "home" || location.hash !== "#rolls") return;
     tabs.select("rolls");
-    requestAnimationFrame(function () { document.getElementById("menu").scrollIntoView(); });
   }
-  window.addEventListener("hashchange", restoreRollsAnchor);
+  document.addEventListener("ruma:navigation", restoreRollsAnchor);
   restoreRollsAnchor();
 
   // время завтраков в контактах берём из пометки категории «Завтраки» в js/menu.js
@@ -104,4 +104,6 @@
     if (e.key === "ArrowRight") { e.preventDefault(); show(index + 1); }
     if (e.key === "ArrowLeft") { e.preventDefault(); show(index - 1); }
   });
+  }
+  return { mount: mount };
 })();
