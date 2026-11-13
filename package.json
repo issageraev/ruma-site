@@ -2,7 +2,7 @@
   "name": "ruma-site",
   "private": true,
   "scripts": {
-    "test": "node tests/cart.cjs && node tests/menu.cjs"
+    "test": "node tests/cart.cjs && node tests/menu.cjs && node tests/navigation.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"
