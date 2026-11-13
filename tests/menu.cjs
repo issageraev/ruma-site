@@ -126,7 +126,8 @@ const base = "https://ruma-test.invalid/ruma-site/";
       await page.setViewportSize({ width, height: 900 });
       for (const key of ["drinks", "food", "rolls"]) {
         await choose(key);
-        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, width + "px: overflow in " + key);
+        const overflow = await page.evaluate(() => ({ width: document.documentElement.scrollWidth, offenders: [...document.querySelectorAll("#menu-panel *")].filter(el => el.getBoundingClientRect().right > innerWidth + 1).slice(0, 6).map(el => ({ name: el.className, text: el.textContent.slice(0, 60) })) }));
+        assert.ok(overflow.width <= width, width + "px: overflow in " + key + ": " + JSON.stringify(overflow));
         assert.equal(await page.locator(".tab").evaluateAll(tabs => tabs.every(t => t.scrollWidth <= t.clientWidth + 1 && t.scrollHeight <= t.clientHeight + 1)), true, width + "px: clipped labels");
       }
     }
