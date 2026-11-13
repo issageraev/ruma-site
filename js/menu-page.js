@@ -8,6 +8,7 @@
   var chips = document.getElementById("chips");
   var tabsRoot = document.getElementById("menu-tabs");
   var currentGroup = "drinks";
+  var restoringHistory = false;
   var order = ["drinks", "food", "rolls"];
 
   // категории с одинаковым group (или без него — по своему названию) собираются в один раздел
@@ -102,7 +103,7 @@
     if (key === currentGroup) return;
     var dir = order.indexOf(key) - order.indexOf(currentGroup);
     currentGroup = key;
-    if (location.hash !== "#" + key) history.pushState(null, "", "#" + key);
+    if (!restoringHistory && location.hash !== "#" + key) history.pushState(null, "", "#" + key);
     // список и чипсы плавно сменяются, а новая вкладка читается с начала списка
     RumaUI.swapContent([panel, chips], dir, function () {
       render(key);
@@ -131,8 +132,12 @@
 
   function restoreTab() {
     var key = location.hash.slice(1);
-    if (order.indexOf(key) === -1) key = "drinks";
-    tabs.select(key);
+    // #top и #main — обычные якоря страницы, они не выбирают раздел.
+    if (key && order.indexOf(key) === -1) return;
+    restoringHistory = true;
+    try { tabs.select(key || "drinks"); }
+    finally { restoringHistory = false; } // восстановление не создаёт новую запись истории
+
   }
   window.addEventListener("popstate", restoreTab);
   window.addEventListener("hashchange", restoreTab);

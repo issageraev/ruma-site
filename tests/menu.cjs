@@ -84,6 +84,23 @@ const base = "https://ruma-test.invalid/ruma-site/";
     await page.locator('.tabbar__item[data-key="menu"]').click();
     await page.waitForURL(base + "menu.html");
 
+    // Back to the initial hashless URL must preserve Forward and allow leaving the catalogue.
+    await choose("food");
+    await page.goBack();
+    await selected("drinks");
+    assert.equal(page.url(), base + "menu.html");
+    await page.goForward();
+    await selected("food");
+    await page.goBack();
+    await selected("drinks");
+    await page.goBack();
+    assert.equal(page.url(), base + "index.html");
+    await page.goto(base + "menu.html#rolls");
+    await selected("rolls");
+    await page.evaluate(() => { location.hash = "main"; });
+    assert.equal(await page.locator("#menu-tabs .is-active").getAttribute("data-tab"), "rolls");
+    assert.equal(page.url(), base + "menu.html#main");
+
     // All labels fit and remain tappable at narrow widths. Arrow navigation reaches all three tabs.
     for (const width of [320, 390, 768, 1440]) {
       await page.setViewportSize({ width, height: 900 });
