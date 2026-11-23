@@ -22,8 +22,8 @@ window.RumaRolls = (function () {
       '<button class="roll-card__open" type="button" ' + attrs + ' aria-haspopup="dialog" ' +
         'aria-label="' + esc(item.name) + ' — фото и состав">' +
         '<span class="roll-card__media">' +
-          '<img class="roll-card__img" src="' + photo(item) + '" alt="' + esc(item.name) + '" width="1000" height="1250" loading="lazy">' +
-          '<img class="roll-card__img roll-card__img--alt" src="' + photo(item, true) + '" alt="" aria-hidden="true" width="1000" height="1250" loading="lazy">' +
+          '<img class="roll-card__img" src="' + photo(item).replace(".webp", "-640.webp") + '" srcset="' + photo(item).replace(".webp", "-320.webp") + ' 320w, ' + photo(item).replace(".webp", "-640.webp") + ' 640w" sizes="(max-width: 760px) 50vw, 320px" alt="' + esc(item.name) + '" width="1000" height="1250" loading="lazy">' +
+          '<img class="roll-card__img roll-card__img--alt" data-src="' + photo(item, true) + '" alt="" aria-hidden="true" width="1000" height="1250" loading="lazy">' +
         "</span>" +
         '<span class="roll-card__body">' +
           '<span class="roll-card__name">' + esc(item.name) + "</span>" +
@@ -108,6 +108,13 @@ window.RumaRolls = (function () {
   document.getElementById("roll-add").addEventListener("click", function () {
     if (!current) return;
     RumaCart.add(current.item, current.variant.label, current.variant.price).then(RumaCart.closeAll);
+  });
+
+  document.addEventListener("pointerover", function (e) {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    var card = e.target.closest(".roll-card");
+    var image = card && card.querySelector("img[data-src]");
+    if (image) { image.src = image.dataset.src; image.removeAttribute("data-src"); }
   });
 
   document.addEventListener("click", function (e) {

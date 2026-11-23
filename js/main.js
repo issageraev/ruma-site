@@ -4,6 +4,15 @@ window.RumaHome = (function () {
 
   function mount() {
 
+  var mapButton = document.querySelector("[data-map-src]");
+  if (mapButton) mapButton.addEventListener("click", function () {
+    var frame = document.createElement("iframe");
+    frame.src = mapButton.dataset.mapSrc;
+    frame.title = "RUMA на карте";
+    frame.allowFullscreen = true;
+    mapButton.replaceWith(frame);
+  });
+
   /* ---------- подборка меню ---------- */
   var panel = document.getElementById("menu-panel");
   var tabsRoot = document.getElementById("menu-tabs");
